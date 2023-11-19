@@ -1,0 +1,32 @@
+Instruction Manual
+
+To play, unzip FBALL.ZIP to the directory in which QBASIC is located.
+Once it is unzipped, type FBALL.
+Start QBASIC and load FOOTBALL.BAS
+Press F5 to start.
+
+The object of the game is simple:
+    PRACTICE MODE--Get the highest score
+    MONDAY NIGHT---Beat your opponent
+
+In MONDAY NIGHT you gain a certain amount of yards depending on who you throw to
+    1st Receiver : 2 yrds
+    2nd Receiver : 4 yrds
+    3rd Receiver : 10 yrds
+
+--ACTION KEYS for Both Modes
+
+  <---- Run left
+  ----> Run right
+  Ent   Throw Football
+
+---Encrypted code
+
+   There is an encrypted code function that you can use when the VS screen comes up
+   Use it by pressing keys 1-6
+   Reset the code by pressing key 7
+
+---Speed
+  
+                                                        
+

@@ -1,0 +1,199 @@
+         -------------   |        |     |------     |-------     |--------|
+              |          |        |     |      |    |       |    |        |
+              |          |        |     |      |    |       |    |        |
+              |          |        |     |------     |-------     |        |
+              |          |        |     |    |      |       |    |        |
+              |          |        |     |     |     |       |    |        |
+              |          |________|     |      |    |_______|    |________|
+
+
+            |-------         |---------|        |     |        |---------
+            |       |        |         |        |\    |        |
+            |       |        |         |        | \   |        | 
+            |-------         |         |        |  \  |        |     
+            |                |         |        |   \ |        |    -----|
+            |                |         |        |    \|        |         |
+            |                |_________|        |     |        |_________|
+
+                                 
+                                 TURBO PONG
+                                Version  1.0
+                
+                              Copyright @ 1996
+                               Bostrom Design
+                              Released  1/1/96 
+
+
+CONTENTS:
+  1. How to Play
+  2. Tricks and Secrets
+  3. What's coming up
+  4. Credits
+  5. About Bostrom Design 
+
+
+
+1. HOW TO PLAY
+  Put all the files in the same directory, run setup.bat, then run tpong.bat    
+
+
+   The object of the game is to hit the ball with the paddle...but it's not that 
+ easy when your oppnent is armed with deadly weapons. 
+  
+    There are 3 modes of play:
+
+      1 Player      '1 Player single game
+      2 Player      '2 Player single game 
+      Tournement    '1 Player Tournement game where its you against the balls
+
+    Note:
+      Tournement mode has been disabled in Version 1.0 but will be enabled in the
+     next release 
+
+    In 1 Player Games your controls are:
+
+       UP ARROW    moves your paddle up 
+       DOWN ARROW  moves your paddle down
+       DELETE      Button 1   '''Has many uses'''
+       END         Button 2   '''Has many uses'''
+
+
+    In the 2 Player Game the controls are:
+
+       Player 1:   'Left Side
+         Q      moves your paddle up 
+         A      moves your paddle down
+         S      Button 1   '''Has many uses'''
+         Z      Button 2   '''Has many uses'''
+        
+       Player 2:   'Right Side 
+        UP ARROW    moves your paddle up 
+        DOWN ARROW  moves your paddle down
+        DELETE      Button 1   '''Has many uses'''
+        END         Button 2   '''Has many uses'''
+  
+  Options Menu:
+ 
+     VOLUME      'Sets the volume for Sound Blaster Music and Sound FX
+    HYPER MODE   'If Hyper mode is ON the ball and the paddles move twice as fast
+   
+
+
+2. TRICKS AND SECRETS
+
+    Secret Moves & Weapons
+ 
+       For All Paddles
+        UP + DOWN   'Stop   
+
+       Blue Paddle
+        B1          'Laser
+        UP + ?      'HI Laser
+        DOWN + ?    'LOW Laser  
+        ? + ?       'Turbo Paddle "It hits the ball with out you having to hit it" 
+
+       Gray Paddle
+        B1          'Misssle  "WAY COOL"
+        ? + ?       'Space Frezze   
+    
+       Red Paddle
+        B1          'Fire Ball
+        ? , ?       'Fast Fire Ball
+        ? + ?       'Power disrupter 
+
+       Green Paddle          'Secret Paddle 
+        B1          'Plasma Canon
+        ? + ?       'Mega Paddle "Use Wisely"  '''BIG PADDLE''' 
+       
+
+3. WHAT'S COMING UP
+
+STAR CHASER Training Version 1.0                Completed 11/1/95
+ Join the USSF (United States Space Force) and take on the universe in this action packed   EGA scrolling shooter.
+  Game Type: Scrolling Shooter
+  Features:
+     EGA 16 Color Graphics
+     PC Speaker Sound Effects
+     4 Missions  to beat
+     2 kinds of Enemy ships to battle with
+     4 Cool end of level Bosses               
+     
+
+TURBO PONG Version 1.0                              Completed 1/2/96
+ The Ultimate pong experience, with brilliant 256 color VGA graphics. With Sound             
+ Blaster Sound FX and 5 Cool Sound Blaster Soundtracks to fit each level.
+  Game Type: Pong Game
+  System Requirments:
+      286 or higher CPU
+      VGA Graphics Adapter with 64K DRAM or more    
+  Optionial:  
+      Sound Blaster or 100% compatible sound card or PC Speaker
+    Note:
+       Sound Blaster sound and music will only run on a 486 SX-25 or higher
+              
+   Features:
+     VGA 256 Color Graphics
+     Sound Blaster FX & Music     
+     3 Modes of play   / 1 Player , 2 Player and Tournament Mode
+     4 Worlds to play pong in, The Galaxy, The Moon, The Castle and The Grasslands
+     4 Paddles with different Weapons and Secret moves    
+     4 Balls to Challenge
+     
+
+ROBO WARRIOR Version 1.0                             Release Date 2/1/96
+ Robo Warrior is a 256 Color VGA Robot Fighting Game.
+    The year is 2046, a new sport has evolved. Competitors make a high-tech remote          controlled robot that they use to battle other robots, the winner is the one that is standing at the end of the match.
+ Game Type:  Robot Fighting Game
+ Features:
+     VGA 256 Color Graphics 
+     Sound Blaster FX & Music
+     3 Modes of play 
+     8 Arenas to fight in 
+     5 Robots to fight with      
+        
+ROAD WARRIOR
+    The Year is 2120.  The roads of the world have been taken over by Arab terrorist and only you can return peace and order to world transportation.
+ Bostrom Design's first VGA Shooting Scroller, with Excellent graphics.
+ Games Type: Vertical Shooting Scroller  
+ Features:
+     VGA 256 Color Graphics 
+     Sound Blaster FX & Music
+     Lots of enemies and bosses 
+     4 Long Roads to beat
+
+
+THE STARS AND BEYOND Version 1.0            Release Date   (Not Set)      
+  UNKNOWN 
+  Game Type: Space Adventure 
+  Features:
+     VGA 256 Color Graphics 
+     Sound Blaster FX & Music
+
+
+4. CREDITS
+  
+     Eric Bostrom   : Game Design  
+                    : Programming
+                    : Art                 
+                    : Music & Sound
+
+
+     Eric Bostrom Sr: User Interface Testing 
+                    : Game Design
+
+
+     Rick Bostrom   : Game Testing
+  
+   
+     Rolf Bostrom   : 286 Testing
+
+        
+
+5. About Bostrom Design
+   
+    The Bostrom Design Staff is mad up of ME (Eric Bostrom 14), my Dad (Eric Bostrom Sr.),
+  my Uncle (Rolf Bostrom), and my cousin (Rick Bostrom 9, The Master game player).
+  We'd like to here what you thik of the game, send any comments to 
+                           
+                          EBostrom@aol.com       
+                  

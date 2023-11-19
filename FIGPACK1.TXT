@@ -1,0 +1,17 @@
+Fig Pack 1 (10/07/97)
+
+        This is a package of FIG games, including all three of the HELLPIT
+games completely debugged, and FANTASY POWER ZONE, made by Sabin24601@aol.com.
+Please do not edit any of the files in any way.  You are allowed to put this
+zip file anywhere you want.  I'm not responsible for anything that may (and I
+know these games aren't going to affect your computer in any way) happen to
+your computer.
+
+- HELLPIT TRILOGY - A collection of RPG's.  Has HELLPIT I, II and III.
+   Author - PANTERA55@aol.com
+
+- FANTASY POWER ZONE - A humorous, and fun RPG.
+   Author - Sabin24601@aol.com
+
+   Make sure that all of these files are in the same directory!
+   Use the .bat files to properly run these games!

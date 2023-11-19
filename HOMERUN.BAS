@@ -1,0 +1,549 @@
+DECLARE SUB TITLESCREEN ()
+DECLARE SUB BROKEN (BREAKS!)
+DECLARE SUB SCOREBOARD (balls!, strikes!, outs!, text$)
+DECLARE SUB BALLSTRIKE (SWING!, B!, W!, strikes!, balls!, outs!, RESULT!, text$)
+DECLARE SUB COCKEDARM (I!, J!)
+DECLARE SUB SHOES ()
+DECLARE SUB STRAIGHTHANDS (J!)
+DECLARE SUB STRAIGHTBAT (I!)
+DECLARE SUB COCKEDBAT (I!)
+DECLARE SUB PLATE ()
+DECLARE SUB BOXES ()
+DECLARE SUB HOUSE ()
+DECLARE SUB BATTER (I!)
+DECLARE SUB PITCHER (I!)
+DECLARE SUB DOSWING (K!)
+DECLARE SUB ARM (I!, J!)
+DECLARE SUB HEAD ()
+DECLARE SUB PANTS ()
+DECLARE SUB SLEEVE ()
+DECLARE SUB GAME2 (WORD, SWING, STRIKE, BALL, outs)
+
+SCREEN 9, 0
+CALL TITLESCREEN
+CALL GAME2(WORD, SWING, STRIKE, BALL, outs)
+
+SUB BALLSTRIKE (SWING, BSWING, W, strikes, balls, outs, RESULT, text$)
+
+ HIT = 0
+ BREAK = 0
+ IF SWING = 1 THEN
+  IF BSWING > 230 THEN
+   HIT = 1
+   strikes = 0
+   RESULT = 1
+   IF W < 3 THEN
+    BREAK = 1
+    text$ = "HOME RUN!  "
+   ELSE
+    text$ = "CAUGHT!    "
+    outs = outs + 1
+   END IF
+  ELSE
+   strikes = strikes + 1
+   text$ = "STRIKE!   "
+  END IF
+  SWING = 0
+ ELSE
+  IF W > 2 THEN
+   balls = balls + 1
+   text$ = "BALL!     "
+  ELSE
+   strikes = strikes + 1
+   text$ = "STRIKE!   "
+  END IF
+ END IF
+
+ IF strikes = 3 THEN
+  outs = outs + 1
+  RESULT = 1
+  text$ = "YOU'RE OUT!"
+ END IF
+
+ IF balls = 4 THEN
+  text$ = "WALK!      "
+  RESULT = 1
+ END IF
+
+END SUB
+
+SUB BATTER (I)
+
+' BODY (SOME DIFFERENT)
+IF I = 0 THEN
+ CIRCLE (189, 240), 40
+ LINE (210, 215)-(190, 205)
+ LINE (150, 230)-(165, 200)
+ LINE (165, 200)-(190, 205)
+ PAINT (189, 240)
+END IF
+PAINT (170, 210)
+CALL PANTS
+IF I = 0 THEN CALL SHOES
+
+'BATTER
+IF I = 0 THEN
+ CALL HEAD
+ CALL SLEEVE
+ CALL COCKEDBAT(6)
+ CALL COCKEDARM(13, 5)
+ELSE
+ CALL COCKEDBAT(2)
+ CALL HEAD
+ CALL COCKEDARM(2, 2)
+ LINE (221, 213)-(233, 220), 2, BF
+ LINE (225, 205)-(240, 215), 2, BF
+ CIRCLE (189, 240), 40, , 6, 1
+ PAINT (210, 230)
+ CALL SLEEVE
+ CALL STRAIGHTHANDS(13)
+ CALL STRAIGHTBAT(6)
+ CALL STRAIGHTHANDS(2)
+ CALL STRAIGHTBAT(2)
+ CIRCLE (189, 240), 40, , 6, .7
+ PAINT (220, 230)
+ LINE (215, 220)-(198, 237), 7
+ CALL COCKEDBAT(6)
+ CALL COCKEDARM(13, 5)
+ CALL HEAD
+END IF
+
+CALL PANTS
+
+END SUB
+
+SUB BOXES
+LINE (247, 265)-(225, 350), 6
+LINE (247, 265)-(130, 264), 6
+LINE (130, 264)-(98, 350), 6
+PAINT (230, 275), 6
+LINE (393, 265)-(411, 350), 6
+LINE (393, 265)-(510, 264), 6
+LINE (510, 264)-(542, 350), 6
+PAINT (400, 275), 6
+END SUB
+
+SUB BROKEN (BREAKS)
+
+ IF BREAKS = 1 THEN
+  I = 30
+  J = 90
+ ELSEIF BREAKS = 2 THEN
+  I = 120
+  J = 90
+ ELSEIF BREAKS = 3 THEN
+  I = 30
+  J = 125
+ ELSE
+  I = 120
+  J = 125
+ END IF
+
+ CIRCLE (I, J + 2), 4, 8
+ CIRCLE (I, J + 2), 8, 8
+ CIRCLE (I, J + 2), 6, 8
+
+ LINE (I, J + 2)-(I + 5, J - 5), 8
+ LINE (I + 5, J - 5)-(I, J - 10), 8
+ LINE (I + 5, J - 4)-(I + 16, J - 10), 8
+ LINE (I, J + 2)-(I - 10, J), 8
+ LINE (I - 10, J)-(I - 15, J - 10), 8
+ LINE (I - 5, J + 1)-(I - 15, J + 10), 8
+ LINE (I, J + 2)-(I + 1, J + 12), 8
+ LINE (I - 9, J + 6)-(I - 8, J + 12), 8
+ LINE (I, J + 2)-(I + 10, J + 12), 8
+ LINE (I + 8, J + 10)-(I + 15, J + 8), 8
+ LINE (I, J + 2)-(I + 15, J), 8
+ LINE (I, J + 2)-(I + 15, J - 5), 8
+ LINE (I - 5, J - 5)-(I - 5, J - 10), 8
+
+END SUB
+
+SUB COCKEDARM (I, J)
+ LINE (205, 231)-(226, 210), I
+ LINE (205, 231)-(215, 236), I
+ LINE (215, 236)-(236, 215), I
+ LINE (220, 210)-(210, 215), I
+ LINE (210, 215)-(217, 219), I
+ CIRCLE (230, 213), 10, I
+ PAINT (220, 230), I
+ PAINT (216, 213), I
+ LINE (226, 210)-(217, 219), J
+ PAINT (230, 213), I
+ CIRCLE (230, 213), 11, J, 2.8, 3.6
+END SUB
+
+SUB COCKEDBAT (I)
+ LINE (135, 165)-(244, 224), I
+ LINE (145, 158)-(249, 220), I
+ CIRCLE (140, 162), 7, I, .6, 4.6
+ CIRCLE (246, 222), 7, I, 3.1, 1.8
+ PAINT (140, 162), I
+ PAINT (246, 222), I
+ IF I = 6 THEN
+  LINE (135, 165)-(244, 224), 8
+  LINE (145, 158)-(249, 220), 8
+  CIRCLE (140, 162), 7, 8, .6, 4.6
+  CIRCLE (246, 222), 7, 8, 3.1, 1.8
+ END IF
+END SUB
+
+SUB GAME2 (WORD, SWING, STRIKE, BALL, outs)
+CLS
+
+' SKY
+LINE (0, 149)-(650, 149), 9
+PAINT (320, 145), 9
+CALL HOUSE
+
+'DRAW FIELD
+LINE (0, 149)-(650, 350), 2, BF
+CALL PLATE
+CALL BOXES
+
+outs = 0
+BREAKS = 1
+STANZA = 1
+text$ = "BATTER UP! "
+
+' DRAW SCOREBOARD
+LINE (510, 37)-(630, 117), 8, BF
+LINE (520, 117)-(530, 148), 8, BF
+LINE (620, 117)-(610, 148), 8, BF
+
+DO WHILE outs <= 2 AND BREAKS <= 4
+ RESULT = 0
+ strikes = 0
+ balls = 0
+ SWING = 0
+ CALL SCOREBOARD(balls, strikes, outs, text$)
+ DO UNTIL RESULT = 1
+  A = 320
+  B = 150
+  C = 0
+  LINE (0, 149)-(650, 350), 2, BF
+  CALL PLATE
+  CALL BOXES
+  CALL PITCHER(0)
+  CALL BATTER(0)
+
+ IF start < 1 THEN
+  text$ = "PRESS ENTER"
+  CALL SCOREBOARD(balls, strikes, outs, text$)
+   DO UNTIL INKEY$ = CHR$(13)
+   LOOP
+ END IF
+ start = start + 1
+
+ DO UNTIL delay = 25000
+  delay = delay + 1
+ LOOP
+ delay = 0
+
+DO UNTIL B > 250
+   IF C > 29 THEN
+    C = C - 10
+    CIRCLE (A, B), C
+    PAINT (A, B)
+   ELSE
+    CIRCLE (A, B), C
+    PAINT (A, B)
+   END IF
+   COUNT = 0
+   DO UNTIL COUNT >= 600
+    COUNT = COUNT + 1
+   LOOP
+  
+   IF INKEY$ = CHR$(13) AND SWING = 0 THEN
+    SWING = 1
+    BSWING = B
+    CALL BATTER(1)
+   END IF
+  
+   CIRCLE (A, B), C, 2
+   PAINT (A, B), 2
+   CALL PITCHER(1)
+   C = C + 10
+   B = B + 13.5
+  LOOP           'END PITCH
+  CALL BALLSTRIKE(SWING, BSWING, W, strikes, balls, outs, RESULT, text$)
+  IF text$ = "HOME RUN!  " THEN
+   CALL BROKEN(BREAKS)
+   STANZA = STANZA + 1
+   BREAKS = BREAKS + 1
+  END IF
+  CALL SCOREBOARD(balls, strikes, outs, text$)
+ LOOP            'END AT BAT
+
+LOOP             'END GAME
+ 
+END SUB
+
+SUB Hand (speed, boy, score)
+A = 0
+B = 210
+C = 100
+d = 240
+
+DO UNTIL INKEY$ = CHR$(13)
+LINE (A, B)-(C, d), 4, BF
+LINE (C, d)-(C + 30, B), 13, BF
+LINE (C, B - 10)-(C + 20, d - 30), 13, BF
+LINE (C + 30, B)-(C + 50, B + 10), 13, BF
+LINE (C + 30, B + 11)-(C + 20, B + 11), 8
+LINE (C + 30, B + 17)-(C + 20, B + 17), 8
+LINE (C + 30, B + 24)-(C + 20, B + 24), 8
+LINE (A, B)-(A - speed, d), 0, BF
+LINE (C, B - 10)-(C - speed, d - 30), 0, BF
+
+A = A + speed
+C = C + speed
+
+IF A > 680 THEN
+A = -100
+C = 0
+END IF
+LOOP
+
+LINE (A, B)-(C, d), 0, BF
+LINE (C, d)-(C + 30, B), 0, BF
+LINE (C, B - 10)-(C + 20, d - 30), 0, BF
+LINE (C + 30, B)-(C + 50, B + 10), 0, BF
+LINE (A, B)-(A - speed, d), 0, BF
+LINE (C, B - 10)-(C - speed, d - 30), 0, BF
+
+LINE (A, d)-(A + 40, B - 40), 4, BF
+LINE (A, B - 40)-(A + 40, B - 60), 13, BF
+LINE (A, B - 40)-(A - 15, B - 50), 13, BF
+LINE (A, B - 50)-(A + 15, B - 75), 13, BF
+LINE (A + 15, B - 60)-(A + 15, B - 50), 8
+LINE (A + 24, B - 60)-(A + 24, B - 50), 8
+LINE (A + 33, B - 60)-(A + 33, B - 50), 8
+
+IF boy = 1 AND A > 135 AND A < 250 THEN
+score = score + 1
+PLAY "o2l10egp3"
+ELSEIF boy = 2 AND A > 10 AND A < 125 THEN
+score = score + 1
+PLAY "o2l10egp3"
+ELSEIF boy = 3 AND A > 510 AND A < 625 THEN
+score = score + 1
+PLAY "o2l10egp3"
+ELSEIF boy = 4 AND A > 260 AND A < 375 THEN
+score = score + 1
+PLAY "o2l10egp3"
+ELSEIF boy = 5 AND A > 385 AND A < 500 THEN
+score = score + 1
+PLAY "o2l10egp3"
+ELSE
+PLAY "o0l10c3p3"
+END IF
+
+IF boy = 1 THEN
+LOCATE 9, 23
+PRINT "Jack"
+ELSEIF boy = 2 THEN
+LOCATE 9, 7
+PRINT "Tony"
+ELSEIF boy = 3 THEN
+LOCATE 9, 70
+PRINT "Lumpy"
+ELSEIF boy = 4 THEN
+LOCATE 9, 38
+PRINT "Harvey"
+ELSEIF boy = 5 THEN
+LOCATE 9, 55
+PRINT "Will"
+END IF
+
+
+LINE (A, d)-(A + 40, B - 40), 0, BF
+LINE (A, B - 40)-(A + 40, B - 60), 0, BF
+LINE (A, B - 40)-(A - 15, B - 50), 0, BF
+LINE (A, B - 50)-(A + 15, B - 75), 0, BF
+
+END SUB
+
+SUB HEAD
+ CIRCLE (180, 190), 25, 13, , , .75
+ PAINT (180, 190), 13
+ CIRCLE (179, 177), 20, 6, 4.5, , .3
+ CIRCLE (160, 185), 15, 6, 4.7, .1, 1
+ CIRCLE (180, 190), 25, 6, .7, 3.7, .75
+ PAINT (170, 180), 6
+END SUB
+
+SUB HOUSE
+LINE (0, 69)-(75, 44), 8
+LINE (75, 44)-(150, 69), 8
+LINE (150, 69)-(0, 69), 8
+PAINT (75, 49), 8
+
+LINE (150, 69)-(0, 69), 6
+LINE (150, 69)-(150, 149), 6
+LINE (150, 149)-(0, 149), 6
+PAINT (75, 144), 6
+
+LINE (0, 69)-(150, 69), 7
+LINE (0, 77)-(150, 77), 7
+LINE (0, 86)-(150, 86), 7
+LINE (0, 93)-(150, 93), 7
+LINE (0, 102)-(150, 102), 7
+LINE (0, 109)-(150, 109), 7
+LINE (0, 118)-(150, 118), 7
+LINE (0, 125)-(150, 125), 7
+LINE (0, 134)-(150, 134), 7
+LINE (0, 141)-(150, 141), 7
+LINE (0, 149)-(150, 149), 7
+LINE (0, 69)-(0, 149), 7
+LINE (150, 69)-(150, 149), 7
+LINE (0, 69)-(75, 44), 7
+LINE (75, 44)-(150, 69), 7
+
+LINE (61, 115)-(88, 149), 8, BF
+LINE (13, 79)-(47, 104), 8, BF
+LINE (102, 79)-(137, 104), 8, BF
+LINE (12, 114)-(47, 139), 8, BF
+LINE (102, 114)-(137, 139), 8, BF
+
+LINE (60, 114)-(60, 149), 7
+LINE (60, 114)-(89, 114), 7
+LINE (89, 114)-(89, 149), 7
+
+LINE (15, 81)-(44, 102), , BF
+LINE (105, 81)-(134, 102), , BF
+LINE (15, 116)-(44, 137), , BF
+LINE (105, 116)-(134, 137), , BF
+
+END SUB
+
+SUB PANTS
+ CIRCLE (189, 250), 39, 9, 3.1, , .3
+ CIRCLE (170, 255), 20, 9, 3, 5, 1
+ LINE (225, 255)-(220, 270), 9
+ LINE (160, 270)-(195, 320), 9, BF
+ LINE (185, 270)-(220, 310), 9, BF
+ PAINT (200, 265), 9
+ LINE (196, 310)-(196, 280), 1
+END SUB
+
+SUB PITCHER (I)
+
+ 'PANTS
+ CIRCLE (325, 167), 5, 8, 3.6, 5.8, 1
+ LINE (320, 167)-(320, 179), 8
+ LINE (320, 179)-(330, 179), 8
+ LINE (330, 179)-(330, 167), 8
+ PAINT (325, 175), 8
+ LINE (325, 179)-(325, 173), 0
+
+ 'SHIRT
+ IF I = 0 THEN
+  CIRCLE (325, 167), 5, 5, , , 1
+  PAINT (325, 167), 5
+  CIRCLE (325, 160), 4, 6
+  PAINT (325, 160), 6
+  CIRCLE (325, 160), 4, 8, .3, 3
+  LINE (320, 165)-(316, 161), 5
+  LINE (323, 164)-(318, 160), 5
+  LINE (316, 161)-(318, 160), 5
+  PAINT (317, 161), 5
+  CIRCLE (316, 160), 1
+ ELSE
+  CIRCLE (325, 167), 5, 8, 3.6, 5.8, 1
+  LINE (320, 167)-(320, 179), 8
+  LINE (320, 179)-(330, 179), 8
+  LINE (330, 179)-(330, 167), 8
+  PAINT (325, 175), 8
+  LINE (325, 179)-(325, 173), 0
+  CIRCLE (325, 167), 5, 5, , , 1
+  PAINT (325, 167), 5
+  CIRCLE (325, 160), 4, 6
+  PAINT (325, 160), 6
+  CIRCLE (325, 160), 4, 8, .3, 3
+ END IF
+
+' MOUND
+ CIRCLE (320, 180), 15, 6, , , .2
+ PAINT (320, 181), 6
+ LINE (310, 180)-(330, 180)
+
+END SUB
+
+SUB PLATE
+ LINE (270, 300)-(370, 300)
+ LINE (370, 300)-(375, 320)
+ LINE (375, 320)-(320, 330)
+ LINE (320, 330)-(265, 320)
+ LINE (265, 320)-(270, 300)
+ PAINT (320, 320)
+END SUB
+
+SUB SCOREBOARD (balls, strikes, outs, text$)
+ COLOR 14, 8
+ LOCATE 5, 66
+ PRINT "            "
+ LOCATE 4, 66
+ PRINT text$ + " "
+ LOCATE 6, 66
+ PRINT "BALLS:   "; balls
+ LOCATE 7, 66
+ PRINT "STRIKES: "; strikes
+ LOCATE 8, 66
+ PRINT "OUTS:    "; outs
+ COLOR 15, 0
+END SUB
+
+SUB SHOES
+LINE (197, 321)-(207, 325), 8
+CIRCLE (207, 330), 7, 8, 4, 2
+LINE (204, 335)-(165, 335), 8
+LINE (165, 335)-(165, 321), 8
+LINE (165, 321)-(197, 321), 8
+PAINT (207, 330), 8
+LINE (220, 311)-(230, 315), 8
+CIRCLE (227, 319), 7, 8, 4, 2
+LINE (225, 324)-(196, 324), 8
+LINE (196, 324)-(196, 311), 8
+LINE (196, 311)-(220, 311), 8
+PAINT (227, 319), 8
+END SUB
+
+SUB SLEEVE
+ CIRCLE (190, 220), 15, 7, 1, 4.2
+ LINE (199, 211)-(215, 220), 7
+ LINE (183, 229)-(198, 237), 7
+ LINE (215, 220)-(198, 237), 7
+END SUB
+
+SUB STRAIGHTBAT (I)
+ CIRCLE (235, 238), 10, I, 5.9, .4
+ LINE (245, 236)-(350, 234), I
+ LINE (245, 241)-(350, 243), I
+ CIRCLE (351, 238), 5, I, 4.5, 2
+ PAINT (351, 238), I
+END SUB
+
+SUB STRAIGHTHANDS (J)
+ LINE (216, 221)-(207, 228), J
+ LINE (216, 221)-(240, 234), J
+ LINE (207, 228)-(230, 240), J
+ CIRCLE (235, 238), 10, J, 3.1, 2
+ PAINT (235, 238), J
+END SUB
+
+SUB TITLESCREEN
+ 'BALL
+ CIRCLE (300, 170), 224, 15
+ PAINT (300, 170), 15
+ CIRCLE (50, 171), 220, 4, 5.3, 1
+ CIRCLE (550, 171), 220, 4, 2.155, 4.13
+
+ LOCATE 13, 30
+ PRINT "HOME RUN DERBY!!"
+
+ DO UNTIL INKEY$ = CHR$(13)
+ LOOP
+
+END SUB
+

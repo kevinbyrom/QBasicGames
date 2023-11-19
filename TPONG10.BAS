@@ -1,0 +1,2928 @@
+'******************************* TURBO PONG *********************************
+'****                           Version  1.0                             ****
+'****                        FROM BOSTROM DESIGN                         ****
+'****                                                                    ****
+'****  Tournement mode has been disabled becasuse of a problem, it will  ****
+'****  be enabled and fixed in the next release.                         ****
+'****  Read the text file for more information and secret moves          ****
+'****                                                                    ****
+'****  Send any comments / suggestions / problems to EBostrom@.aol.com   ****
+'****                                                                    ****
+'****************************************************************************
+
+'DECLARE SUB SBPLAY5 (freq5%, WAVE5%, FEEDBACK5%, NMBF5%, CLEN5%, WAVES5%, NMBF6%, CLEN6%)
+DECLARE SUB SBPLAY4 (freq4%, WAVE4%, FEEDBACK4%, NMBF4%, CLEN4%, WAVES4%)
+DECLARE FUNCTION DetectCard% ()
+DECLARE SUB SBPLAY3 (freq3%, WAVE3%, FEEDBACK3%, NMBF3%, CLEN3%, WAVES3%)
+DECLARE SUB SONG (SONGNUM%)
+DECLARE SUB SBPLAY2 (freq1%, WAVE1%, FEEDBACK1%, NMBF1%, CLEN1%, WAVES1%, NMBF2%, CLEN2%)
+DECLARE SUB SBInit ()
+DECLARE SUB WriteReg (Reg%, Value%)
+DECLARE SUB FX (FXX%)
+DECLARE SUB SBPLAY (freq%, WAVE%, FEEDBACK%, NMBF%, CLEN%)
+DECLARE SUB FONT (A$, X%, Y%, stepX%, stepY%, CO%, Background%, SHADOW%)
+DECLARE SUB SETHUES (HUE() AS ANY, SC%, EC%)
+TYPE HUES
+   RED AS INTEGER
+   GRN AS INTEGER
+   BLU AS INTEGER
+END TYPE
+COMMON SHARED Vol%, FXYN%, NNUM%, SMVol%, SUCCESS%, SMO%, WAVEC2%
+'$DYNAMIC
+DEFINT A-Z
+SCREEN 12
+LOCATE 2, 3: PRINT "TURBO PONG Version 1.0"
+LOCATE 3, 3: PRINT "from Bostrom Design"
+SLEEP 1
+CONST false = 0, true = NOT false
+IF DetectCard = true THEN
+ LOCATE 5, 3: PRINT "Adlib Compatible Sound Card Detected"
+  SMOT = 1
+  FXYNT% = 1
+  SLEEP 1
+  FOR I = 1 TO 10000
+  NEXT I
+  SBInit
+ LOCATE 6, 3: PRINT "Initializing Sound Card"
+END IF
+SLEEP 1
+CLS : SCREEN 13
+DIM PADDLE(900)
+DIM PADDLE1(900)
+DIM BALL1(100)
+RANDOMIZE TIMER
+PADDLE.SPEED = 15
+PADDLE.SPEED.Q = 15
+BALL.SPEED = 12
+DX = BALL.SPEED
+DY = BALL.SPEED
+P = 15
+Q = 15
+SCORE = 0
+'COMSPEED% = 13500      '700/286///8000/DX2-50///13500/DX2-80///
+'COMSPEED1% = 9000
+'COMSPEED3% =
+DEF SEG = 0
+POKE &H417, (Status% XOR &H40)     'Change Caps Lock state, bit 6.
+OPEN "GAME.DAT" FOR INPUT AS #1
+ INPUT #1, COMSPEED%, FXYN%, SBSound%, SCH%
+CLOSE
+
+IF SCH% >= 2 AND SBSound% = 1 AND SMOT% = 1 THEN SMO% = 1
+IF SBSound% = 2 THEN FXYN% = 2
+
+COMSPEED1% = (COMSPEED% \ 4) * 3
+DIM LASER1(100)
+LINE (50, 50)-(60, 50), 100
+GET (50, 50)-(60, 50), LASER1
+CLS
+
+DIM OBJ1(500)
+DEF SEG = VARSEG(OBJ1(1))
+BLOAD "GRASS1.QBI", VARPTRIM(OBJ1(1))
+ERASE OBJ1
+
+DIM W1(200)
+DEF SEG = VARSEG(W1(1))
+BLOAD "FBALL.QBI", VARPTRIM(W1(1))
+
+DIM W(200)
+DEF SEG = VARSEG(W(1))
+BLOAD "FBALL.QBI", VARPTRIM(W(1))
+
+DIM WM1(300)
+
+DIM WM(300)
+
+DEF SEG = VARSEG(BALL1(1))
+BLOAD "REDBALL.QBI", VARPTRIM(BALL1(1))
+
+      DIM OF(400)
+      DEF SEG = VARSEG(OF(1))
+      BLOAD "OFF.QBI", VARPTRIM(OF(1))
+      DIM OF1(400)
+      DEF SEG = VARSEG(OF1(1))
+      BLOAD "OFF1.QBI", VARPTRIM(OF1(1))
+
+ERASE W1, W, WM1, WM, BALL1, OF, OF1
+
+
+'*********************************** P A D D L E S
+WAVEC2 = 0
+DIM REDPAD(400)
+DEF SEG = VARSEG(REDPAD(1))
+BLOAD "REDPAD.QBI", VARPTRIM(REDPAD(1))
+
+DIM BLUPAD(400)
+DEF SEG = VARSEG(BLUPAD(1))
+BLOAD "BLUPAD.QBI", VARPTRIM(BLUPAD(1))
+
+DIM GRYPAD(400)
+DEF SEG = VARSEG(GRYPAD(1))
+BLOAD "GRYPAD.QBI", VARPTRIM(GRYPAD(1))
+
+DIM GRNPAD(400)
+DEF SEG = VARSEG(GRNPAD(1))
+BLOAD "GRNPAD.QBI", VARPTRIM(GRNPAD(1))
+
+ERASE REDPAD, BLUPAD, GRYPAD, GRNPAD
+'************************************************
+
+DIM SLIDER(100)
+DEF SEG = VARSEG(SLIDER(1))
+BLOAD "SLIDER1.QBI", VARPTRIM(SLIDER(1))
+
+DIM VOLBOARD(632)
+DEF SEG = VARSEG(VOLBOARD(1))
+BLOAD "VOLBORD.QBI", VARPTRIM(VOLBOARD(1))
+
+ERASE SLIDER, VOLBOARD
+SMVol% = 7
+ '31 softest
+ '15
+ '7
+ '3
+ '1
+ '0 loudest
+
+ REDIM PAL(255)  AS HUES         'Dim the palette array as HUES
+ DEF SEG = VARSEG(PAL(0))        'Point to the pal array
+ BLOAD "SET.PAL", 0           'Load the palette file
+ SETHUES PAL(), 0, 255              'Set the system colors w/pal array
+
+ DIM SHARED ARROW1(100)
+ DEF SEG = VARSEG(ARROW1(0))
+ BLOAD "ARROW1.QBI", 0
+
+'********** TITLE ****************
+ DIM TPONG1(3300)
+ DEF SEG = VARSEG(TPONG1(1))
+ BLOAD "TPONG1.QBI", VARPTRIM(TPONG1(1))
+
+ OPEN "BDESIGN.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+ CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+ DIM BDES(ARY)
+ DEF SEG = VARSEG(BDES(1))
+ BLOAD "BDESIGN.QBI", VARPTRIM(BDES(1))
+ PUT (0, 0), BDES
+ FX 19
+ SLEEP 5
+ ERASE BDES
+ CLS
+ 'FOR X = 107 TO 80 STEP -1
+ 'LINE (X, 10)-(X, 90), X
+ 'NEXT X
+ 'SLEEP 20
+ OPEN "PONG1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+ CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+ DIM PS1(ARY)
+ DEF SEG = VARSEG(PS1(1))
+ BLOAD "PONG1.QBI", VARPTRIM(PS1(1))
+  
+ 'OPEN "2P.QBI" FOR INPUT AS #1
+ ' FILESIZE& = LOF(1)
+ 'CLOSE
+  'ARY = (FILESIZE& - 7) / 2 - 1
+  'PRINT ARY
+  'SLEEP 5
+   FX 19
+   FOR I = 125 TO 115 STEP -1
+  FONT "Bostrom Design", 93, 90, 8, 0, I, 0, 0
+   FOR N = 1 TO 30000
+    IF N = 1 THEN S = 2
+   NEXT N
+   NEXT I
+   SLEEP 1
+   FOR I = 115 TO 125
+  FONT "Bostrom Design", 93, 90, 8, 0, I, 0, 0
+   FOR N = 1 TO 30000
+    IF N = 1 THEN S = 2
+   NEXT N
+   NEXT I
+   SLEEP 1
+   CLS
+   FX 19
+   FOR I = 125 TO 115 STEP -1
+  FONT "   Presents   ", 93, 90, 8, 0, I, 0, 0
+   'LOCATE 15, 12: PRINT "                 "
+   FOR N = 1 TO 30000
+    IF N = 1 THEN S = 2
+   NEXT N
+   NEXT I
+   SLEEP 1
+   FOR I = 115 TO 125
+  FONT "   Presents   ", 93, 90, 8, 0, I, 0, 0
+  'LOCATE 15, 12: PRINT "                 "
+   FOR N = 1 TO 30000
+    IF N = 1 THEN S = 2
+   NEXT N
+   NEXT I
+   SLEEP 1
+   CLS
+  TPY1 = 110
+   PUT (40, TPY1), TPONG1, XOR
+  TPY = TPY1
+  COMSPEED5% = COMSPEED% + (COMSPEED% / 2)
+  DO
+   GOSUB MMUSIC
+   TPY1 = TPY1 - 20
+   FX 14
+   PUT (40, TPY), TPONG1, XOR
+   PUT (40, TPY1), TPONG1, XOR
+   TPY = TPY1
+   FOR N = 1 TO COMSPEED5%
+    IF 100 = 100 THEN QW = 5
+   NEXT N
+  LOOP UNTIL TPY1 = 10
+   SLEEP 1
+   FX 8
+   FOR I = 107 TO 97 STEP -1
+  FONT "  Version 1.0 ", 87, 50, 8, 0, I, 0, 0
+   FOR N = 1 TO 9
+    GOSUB MMUSIC
+FOR N = 1 TO COMSPEED%
+IF 100 = 100 THEN QW = 5
+NEXT N
+   NEXT N
+   NEXT I
+   FX 8
+   FOR I = 107 TO 97 STEP -1
+  FONT "     From     ", 90, 70, 8, 0, I, 0, 0
+   FOR N = 1 TO 9
+    GOSUB MMUSIC
+FOR N = 1 TO COMSPEED%
+IF 100 = 100 THEN QW = 5
+NEXT N
+   NEXT N
+   NEXT I
+   FX 8
+   FOR I = 107 TO 97 STEP -1
+  FONT "Bostrom Design", 93, 85, 8, 0, I, 0, 0
+   FOR N = 1 TO 15
+    GOSUB MMUSIC
+FOR N = 1 TO COMSPEED%
+IF 100 = 100 THEN QW = 5
+NEXT N
+   NEXT N
+   NEXT I
+
+ DIM S1P(1100), S2P(1100), S3P(1000)
+ DIM S1P1(1100), S2P1(1100), S3P1(1000)
+GOTO MENU1:
+
+MMUSIC:
+'SMVol% = 8
+NNUM = NNUM + 1
+IF NNUM >= 42 THEN NNUM = 0
+SONG 2
+RETURN
+
+
+MENU1:
+ CLS
+ WAVEC2 = 0
+ ERASE PS1
+ OPEN "PONG1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+ CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+ DIM PS1(ARY)
+ DEF SEG = VARSEG(PS1(1))
+ BLOAD "PONG1.QBI", VARPTRIM(PS1(1))
+ PUT (0, 0), PS1
+ ERASE S1P, S2P, S3P, S1P1, S2P1, S3P1
+ DIM S1P(1100)
+ DEF SEG = VARSEG(S1P(1))
+ BLOAD "PGAME.QBI", VARPTRIM(S1P(1))
+
+ DIM S2P(1100)
+ DEF SEG = VARSEG(S2P(1))
+ BLOAD "OPTIONS.QBI", VARPTRIM(S2P(1))
+
+ OPEN "PGAME1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+ CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+
+ DIM S1P1(1100)
+ DEF SEG = VARSEG(S1P1(1))
+ BLOAD "PGAME1.QBI", VARPTRIM(S1P1(1))
+
+ DIM S2P1(1100)
+ DEF SEG = VARSEG(S2P1(1))
+ BLOAD "OPTIONS1.QBI", VARPTRIM(S2P1(1))
+
+ DIM S3P(1100)
+ DEF SEG = VARSEG(S3P(1))
+ BLOAD "QUIT.QBI", VARPTRIM(S3P(1))
+ 
+ DIM S3P1(1100)
+ DEF SEG = VARSEG(S3P1(1))
+ BLOAD "QUIT1.QBI", VARPTRIM(S3P1(1))
+
+
+CLS
+SM = 0
+CHM = 0
+SMY = 60
+'X = 0
+'FOR COL = 0 TO 256
+'LINE (X, 0)-(X, 100), COL
+'X = X + 1
+'NEXT COL
+'SLEEP 20
+PUT (0, 0), PS1
+PUT (40, 20), TPONG1, PSET
+PUT (90, 80), S1P, PSET
+PUT (100, 100), S2P1, PSET
+PUT (115, 120), S3P1, PSET
+DO
+GOSUB MMUSIC
+K$ = INKEY$
+IF K$ = "G" AND ONN = 1 THEN
+ GAME = 2
+ PADDL% = 4
+ PADDL1% = 4
+ GOTO START
+END IF
+IF K$ = CHR$(0) + "H" AND SM > 0 THEN SM = SM - 1: CHM = 1 ': SMY = SMY - 20
+IF K$ = CHR$(0) + "P" AND SM < 2 THEN SM = SM + 1: CHM = 1 ': SMY = SMY + 20
+IF K$ = CHR$(13) THEN
+  FX 17
+  SELECT CASE SM
+   CASE IS = 1
+    GOTO OPTIONS.MENU
+   CASE IS = 0 '******** MENU 2 **************************
+MENU2:
+  CALL WriteReg(&HB1, &H0)
+ CLS
+ ERASE S1P, S2P, S3P, S1P1, S2P1, S3P1
+ DIM S1P(810)
+ DEF SEG = VARSEG(S1P(1))
+ BLOAD "1P.QBI", VARPTRIM(S1P(1))
+
+ DIM S2P(805)
+ DEF SEG = VARSEG(S2P(1))
+ BLOAD "2P.QBI", VARPTRIM(S2P(1))
+
+ DIM S3P(1500)
+ DEF SEG = VARSEG(S3P(1))
+ BLOAD "TOURN.QBI", VARPTRIM(S3P(1))
+
+ DIM S1P1(810)
+ DEF SEG = VARSEG(S1P1(1))
+ BLOAD "1P1.QBI", VARPTRIM(S1P1(1))
+
+ DIM S2P1(805)
+ DEF SEG = VARSEG(S2P1(1))
+ BLOAD "2P1.QBI", VARPTRIM(S2P1(1))
+
+ DIM S3P1(1500)
+ DEF SEG = VARSEG(S3P1(1))
+ BLOAD "TOURN1.QBI", VARPTRIM(S3P1(1))
+
+ PUT (0, 0), PS1
+ PUT (40, 20), TPONG1, PSET
+ PUT (100, 80), S1P, PSET
+ PUT (100, 100), S2P1, PSET
+ PUT (75, 120), S3P1, PSET
+ SM = 0
+ CHM = 0
+ 'FOR I = 1 TO 30000
+ ' IF 1 = 1 THEN
+ '  QW = 1
+ ' ELSE
+ '  QW = 0
+ ' END IF
+ 'NEXT I
+DO
+GOSUB MMUSIC
+K$ = INKEY$
+IF K$ = CHR$(27) THEN GOTO MENU1
+IF K$ = CHR$(0) + "H" AND SM > 0 THEN SM = SM - 1: CHM = 1
+IF K$ = CHR$(0) + "P" AND SM < 2 THEN SM = SM + 1: CHM = 1
+IF K$ = CHR$(13) THEN
+    ERASE S1P, S2P, S3P, S1P1, S2P1, S3P1
+    FX 17
+    SELECT CASE SM
+    CASE IS = 0
+     GAME = 1
+     GOTO MENU.PICK.PADDLE
+    CASE IS = 1
+     GAME = 2
+     GOTO MENU.PICK.PADDLE
+    CASE IS = 2
+     'GAME = 3
+     'GOTO MENUTSET
+     GOTO MENU2
+    END SELECT
+END IF
+   IF CHM = 1 THEN
+   CHM = 0
+   FX 14
+   SELECT CASE SM
+    CASE IS = 0
+     PUT (100, 80), S1P, PSET
+     PUT (100, 100), S2P1, PSET
+     PUT (75, 120), S3P1, PSET
+    CASE IS = 1
+     PUT (100, 80), S1P1, PSET
+     PUT (100, 100), S2P, PSET
+     PUT (75, 120), S3P1, PSET
+    CASE IS = 2
+     PUT (100, 80), S1P1, PSET
+     PUT (100, 100), S2P1, PSET
+     PUT (75, 120), S3P, PSET
+   END SELECT
+  END IF
+  FOR N = 1 TO COMSPEED%
+   IF 100 = 100 THEN QW = 5
+  NEXT N
+ LOOP
+'****************************************
+   CASE IS = 2
+    GOTO ENDING
+  END SELECT
+END IF
+IF CHM = 1 THEN
+ CHM = 0
+ SELECT CASE SM
+  CASE IS = 0
+   PUT (90, 80), S1P, PSET
+   PUT (115, 120), S3P1, PSET
+   PUT (100, 100), S2P1, PSET
+  CASE IS = 1
+   PUT (90, 80), S1P1, PSET
+   PUT (115, 120), S3P1, PSET
+   PUT (100, 100), S2P, PSET
+  CASE IS = 2
+   PUT (90, 80), S1P1, PSET
+   PUT (115, 120), S3P, PSET
+   PUT (100, 100), S2P1, PSET
+ END SELECT
+ FX 14
+END IF
+FOR N = 1 TO COMSPEED%
+IF 100 = 100 THEN QW = 5
+NEXT N
+LOOP
+
+OPTIONS.MENU:
+ CLS
+ ERASE S1P, S2P, S3P, S1P1, S2P1, S3P1
+ DIM S1P(700)
+ DEF SEG = VARSEG(S1P(1))
+ BLOAD "VOLUME.QBI", VARPTRIM(S1P(1))
+
+ DIM S2P(700)
+ DEF SEG = VARSEG(S2P(1))
+ BLOAD "HYPER.QBI", VARPTRIM(S2P(1))
+
+ DIM S3P(700)
+ DEF SEG = VARSEG(S3P(1))
+ BLOAD "QUIT.QBI", VARPTRIM(S3P(1))
+
+ DIM S1P1(700)
+ DEF SEG = VARSEG(S1P1(1))
+ BLOAD "VOLUME1.QBI", VARPTRIM(S1P1(1))
+
+ DIM S2P1(700)
+ DEF SEG = VARSEG(S2P1(1))
+ BLOAD "HYPER1.QBI", VARPTRIM(S2P1(1))
+
+ DIM S3P1(700)
+ DEF SEG = VARSEG(S3P1(1))
+ BLOAD "QUIT1.QBI", VARPTRIM(S3P1(1))
+     IF ONN = 0 THEN
+      ERASE OF, OF1
+      DIM OF(400)
+      DEF SEG = VARSEG(OF(1))
+      BLOAD "OFF.QBI", VARPTRIM(OF(1))
+      DIM OF1(400)
+      DEF SEG = VARSEG(OF1(1))
+      BLOAD "OFF1.QBI", VARPTRIM(OF1(1))
+     ELSE
+      ERASE OF, OF1
+      DIM OF(400)
+      DEF SEG = VARSEG(OF(1))
+      BLOAD "ON.QBI", VARPTRIM(OF(1))
+      DIM OF1(400)
+      DEF SEG = VARSEG(OF1(1))
+      BLOAD "ON1.QBI", VARPTRIM(OF1(1))
+     END IF
+
+ PUT (0, 0), PS1
+ PUT (40, 20), TPONG1, PSET
+ PUT (100, 80), S1P, PSET
+ PUT (85, 100), S2P1, PSET
+ PUT (165, 100), OF1, PSET
+ PUT (115, 120), S3P1, PSET
+ SM = 0
+ CHM = 0
+ 'FOR I = 1 TO 30000
+ ' IF 1 = 1 THEN
+ '  QW = 1
+ ' ELSE
+ '  QW = 0
+ ' END IF
+ 'NEXT I
+DO
+GOSUB MMUSIC
+K$ = INKEY$
+IF K$ = CHR$(27) THEN GOTO MENU1
+IF K$ = CHR$(0) + "H" AND SM > 0 THEN SM = SM - 1: CHM = 1
+IF K$ = CHR$(0) + "P" AND SM < 2 THEN SM = SM + 1: CHM = 1
+IF K$ = CHR$(13) THEN
+    FX 17
+    SELECT CASE SM
+    CASE IS = 0
+     GOTO MENU.SET.VOLUME
+    CASE IS = 1
+     IF ONN = 0 THEN
+      ONN = 1
+     ELSE
+      ONN = 0
+     END IF
+     IF ONN = 0 THEN
+      ERASE OF, OF1
+      DIM OF(400)
+      DEF SEG = VARSEG(OF(1))
+      BLOAD "OFF.QBI", VARPTRIM(OF(1))
+      DIM OF1(400)
+      DEF SEG = VARSEG(OF1(1))
+      BLOAD "OFF1.QBI", VARPTRIM(OF1(1))
+     ELSE
+      ERASE OF, OF1
+      DIM OF(400)
+      DEF SEG = VARSEG(OF(1))
+      BLOAD "ON.QBI", VARPTRIM(OF(1))
+      DIM OF1(400)
+      DEF SEG = VARSEG(OF1(1))
+      BLOAD "ON1.QBI", VARPTRIM(OF1(1))
+     END IF
+     PUT (165, 100), OF, PSET
+    CASE IS = 2
+     ERASE S1P, S2P, S3P, S1P1, S2P1, S3P1, OF, OF1
+     GOTO MENU1
+    END SELECT
+END IF
+   IF CHM = 1 THEN
+   CHM = 0
+   FX 14
+   SELECT CASE SM
+    CASE IS = 0
+     PUT (100, 80), S1P, PSET
+     PUT (85, 100), S2P1, PSET
+     PUT (165, 100), OF1, PSET
+     PUT (115, 120), S3P1, PSET
+    CASE IS = 1
+     PUT (100, 80), S1P1, PSET
+     PUT (85, 100), S2P, PSET
+     PUT (165, 100), OF, PSET
+     PUT (115, 120), S3P1, PSET
+    CASE IS = 2
+     PUT (100, 80), S1P1, PSET
+     PUT (85, 100), S2P1, PSET
+     PUT (165, 100), OF1, PSET
+     PUT (115, 120), S3P, PSET
+   END SELECT
+  END IF
+  FOR N = 1 TO COMSPEED%
+   IF 100 = 100 THEN QW = 5
+  NEXT N
+ LOOP
+
+
+
+
+MENU.SET.VOLUME:
+CLS
+ERASE SLIDER, VOLBOARD
+DIM SLIDER(100)
+DEF SEG = VARSEG(SLIDER(1))
+BLOAD "SLIDER1.QBI", VARPTRIM(SLIDER(1))
+
+DIM VOLBOARD(632)
+DEF SEG = VARSEG(VOLBOARD(1))
+BLOAD "VOLBORD.QBI", VARPTRIM(VOLBOARD(1))
+
+SVXT = 120
+SVX = 120
+
+PUT (115, 87), VOLBOARD, PSET
+PUT (SVX, 100), SLIDER, PSET
+Svol = 0
+FXYN = 1
+DO
+GOSUB MMUSIC
+K$ = INKEY$
+IF K$ = CHR$(0) + "K" AND Svol > 0 THEN Svol = Svol - 1: CHPV = 1: SVX = SVX - 5
+IF K$ = CHR$(0) + "M" AND Svol < 6 THEN Svol = Svol + 1: CHPV = 1: SVX = SVX + 5
+IF K$ = CHR$(13) THEN
+ CLS
+ FX 17
+ ERASE SLIDER, VOLBOARD
+ GOTO OPTIONS.MENU
+END IF
+IF CHPV = 1 THEN
+ SELECT CASE Svol
+  CASE IS = 0
+   SMO% = 0
+   FXYN = 0
+  CASE IS = 1
+   FXYN = 1
+   SMO% = 1
+   Vol% = 12
+   SMVol% = 28
+  CASE IS = 2
+   Vol% = 7
+   SMVol% = 21
+  CASE IS = 3
+   Vol% = 5
+   SMVol% = 15
+  CASE IS = 4
+   Vol% = 0
+   SMVol% = 12
+  CASE IS = 5
+   Vol% = 0
+   SMVol% = 7
+  CASE IS = 6
+   Vol% = 0
+   SMVol% = 0
+ END SELECT
+ CHPV = 0
+ 'PUT (SVXT, 100), SLIDER, PSET
+ PUT (115, 87), VOLBOARD, PSET
+ PUT (SVX, 100), SLIDER, PSET
+ 'SVXT = SVX
+ FX 14
+END IF
+FOR N = 1 TO COMSPEED%
+IF 100 = 100 THEN QW = 5
+NEXT N
+LOOP
+
+
+MENU.PICK.PADDLE:
+PX = 49
+PICK = 0
+CLS
+DIM REDPAD(400)
+DEF SEG = VARSEG(REDPAD(1))
+BLOAD "REDPAD.QBI", VARPTRIM(REDPAD(1))
+
+DIM BLUPAD(400)
+DEF SEG = VARSEG(BLUPAD(1))
+BLOAD "BLUPAD.QBI", VARPTRIM(BLUPAD(1))
+
+DIM GRYPAD(400)
+DEF SEG = VARSEG(GRYPAD(1))
+BLOAD "GRYPAD.QBI", VARPTRIM(GRYPAD(1))
+
+DIM GRNPAD(400)
+DEF SEG = VARSEG(GRNPAD(1))
+BLOAD "GRNPAD.QBI", VARPTRIM(GRNPAD(1))
+
+PUT (50, 40), BLUPAD
+PUT (100, 40), GRYPAD
+
+FONT "Pick Your Paddle Player 1", 27, 10, 10, 0, 160, 0, 190
+PUT (150, 40), REDPAD
+PUT (PX, 20), ARROW1
+LINE (30, 30)-(180, 100), 70, B
+FONT "BLUE PADDLE", 50, 110, 8, 0, 100, 0, 0
+DO
+K$ = INKEY$
+IF K$ = CHR$(0) + "K" AND PICK > 0 THEN PICK = PICK - 1: CHP = 1
+IF K$ = CHR$(0) + "M" AND PICK < 2 THEN PICK = PICK + 1: CHP = 1
+IF K$ = CHR$(0) + "H" AND PICK = 2 THEN PICK = 10: CHP = 1
+IF K$ = CHR$(13) THEN
+SELECT CASE PICK
+ CASE IS = 0
+   PADDL% = 1
+ CASE IS = 1
+   PADDL% = 3
+ CASE IS = 2
+   PADDL% = 2
+ CASE IS = 10
+   PADDL% = 4
+END SELECT
+CLS
+IF GAME = 2 THEN
+ GOTO MENU.PICK.PADDLE1
+ELSE
+ ERASE REDPAD, BLUPAD, GRYPAD, GRNPAD
+ GOTO START
+END IF
+END IF
+
+IF CHP = 1 THEN
+CHP = 0
+PUT (PX, 20), ARROW1
+SELECT CASE PICK
+ CASE IS = 0
+  PX = 49
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "BLUE PADDLE", 50, 110, 8, 0, 100, 0, 0
+ CASE IS = 1
+  PX = 99
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "GRAY PADDLE", 50, 110, 8, 0, 118, 0, 0
+ CASE IS = 2
+  PX = 149
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "RED PADDLE", 50, 110, 8, 0, 38, 0, 0
+ CASE IS = 10
+  PX = 199
+  PUT (200, 40), GRNPAD
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "GREEN PADDLE", 50, 110, 8, 0, 70, 0, 0
+END SELECT
+FX 3
+PUT (PX, 20), ARROW1
+END IF
+LOOP
+
+MENU.PICK.PADDLE1:
+PX = 49
+PICK = 0
+CLS
+PUT (50, 40), BLUPAD
+PUT (100, 40), GRYPAD
+FONT "Pick Your Paddle Player 2", 27, 10, 10, 0, 160, 0, 190
+PUT (150, 40), REDPAD
+PUT (PX, 20), ARROW1
+LINE (30, 30)-(180, 100), 70, B
+FONT "BLUE PADDLE", 50, 110, 8, 0, 100, 0, 0
+DO
+K$ = INKEY$
+IF K$ = CHR$(0) + "K" AND PICK > 0 THEN PICK = PICK - 1: CHP = 1
+IF K$ = CHR$(0) + "M" AND PICK < 2 THEN PICK = PICK + 1: CHP = 1
+IF K$ = CHR$(0) + "H" AND PICK = 2 THEN PICK = 10: CHP = 1
+IF K$ = CHR$(13) THEN
+SELECT CASE PICK
+ CASE IS = 0
+   PADDL1% = 1
+ CASE IS = 1
+   PADDL1% = 3
+ CASE IS = 2
+   PADDL1% = 2
+ CASE IS = 10
+   PADDL1% = 4
+END SELECT
+CLS
+ERASE REDPAD, BLUPAD, GRYPAD, GRNPAD
+GOTO START
+END IF
+
+IF CHP = 1 THEN
+CHP = 0
+PUT (PX, 20), ARROW1
+SELECT CASE PICK
+ CASE IS = 0
+  PX = 49
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "BLUE PADDLE", 50, 110, 8, 0, 100, 0, 0
+ CASE IS = 1
+  PX = 99
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "GRAY PADDLE", 50, 110, 8, 0, 118, 0, 0
+ CASE IS = 2
+  PX = 149
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "RED PADDLE", 50, 110, 8, 0, 38, 0, 0
+ CASE IS = 10
+  PX = 199
+  PUT (200, 40), GRNPAD
+  LOCATE 14, 6: PRINT "                  "
+  LOCATE 15, 6: PRINT "                  "
+  FONT "GREEN PADDLE", 50, 110, 8, 0, 70, 0, 0
+END SELECT
+FX 3
+PUT (PX, 20), ARROW1
+END IF
+LOOP
+
+START:
+ERASE PADDLE
+ERASE PADDLE1
+REDIM PADDLE(900)
+REDIM PADDLE1(900)
+SCORE = 0
+SCORE1 = 0
+BSCORE = 0
+DEEPF = 0
+DEEPF1 = 0
+H1 = 0
+HQ1 = 0
+H2 = 0
+EG = 0
+EG1 = 0
+LAST = 0
+LAST1 = 0
+ IF ONN = 1 THEN
+  PADDLE.SPEED = 18
+  PADDLE.SPEED.Q = 18
+  BALL.SPEED = 16
+  DX = BALL.SPEED
+  DY = BALL.SPEED
+ ELSE
+  PADDLE.SPEED = 15
+  PADDLE.SPEED.Q = 15
+  BALL.SPEED = 12
+  DX = BALL.SPEED
+  DY = BALL.SPEED
+ END IF
+SELECT CASE PADDL1%  '*********** PLAYER 2
+'FOR BLUE PADDLE
+CASE IS = 1
+ WBLAST2 = 0
+ LAS1% = 1
+ LASPEED1% = 20
+ SCAM1 = 1
+ PADLEN1% = 32
+ PADSTOP1% = 150
+ WDAM1% = 1
+ WQS = 15
+ERASE W
+DIM W(100)
+LINE (50, 50)-(60, 50), 100
+GET (50, 50)-(60, 50), W
+CLS
+
+'DEF SEG = VARSEG(W(1))
+'BLOAD "BLULASER.QBI", VARPTRIM(W(1))
+
+ DEF SEG = VARSEG(PADDLE1(1))
+ BLOAD "BLUPAD.QBI", VARPTRIM(PADDLE1(1))
+'FOR RED PADDLE
+CASE IS = 2
+ WBLAST2 = 2
+ WQS = 5
+ WDAM1% = 3
+ LAS1% = 1
+ LASPEED1% = 10
+ PADLEN1% = 17
+ PADSTOP1% = 164
+ SCAM1 = 3
+ ERASE W
+ DIM W(200)
+ DEF SEG = VARSEG(W(1))
+ BLOAD "FBALL.QBI", VARPTRIM(W(1))
+
+ DEF SEG = VARSEG(PADDLE1(1))
+ BLOAD "REDPAD.QBI", VARPTRIM(PADDLE1(1))
+'FOR GRAY PADDLE
+CASE IS = 3
+ WBLAST2 = 15
+ WQS = 5
+ LAS1% = 1
+ LASPEED1% = 15
+ WDAM1% = 3
+ PADLEN1% = 22
+ PADSTOP1% = 158
+ SCAM1 = 2
+ ERASE W
+ DIM W(200)
+ DEF SEG = VARSEG(W(1))
+ BLOAD "MISSLE1B.QBI", VARPTRIM(W(1))
+ ERASE WM
+ DIM WM(300)
+ DEF SEG = VARSEG(WM(1))
+ BLOAD "MISSLE2B.QBI", VARPTRIM(WM(1))
+
+ DEF SEG = VARSEG(PADDLE1(1))
+ BLOAD "GRYPAD.QBI", VARPTRIM(PADDLE1(1))
+CASE IS = 4
+ WBLAST2 = 5
+ WQS = 3
+ LAS1% = 1
+ LASPEED1% = 15
+ WDAM1% = 2
+ PADLEN1% = 22
+ PADSTOP1% = 158
+ SCAM1 = 2
+ ERASE W
+ DIM W(200)
+ DEF SEG = VARSEG(W(1))
+ BLOAD "GRASSR.QBI", VARPTRIM(W(1))
+ DEF SEG = VARSEG(PADDLE1(1))
+ BLOAD "GRNPAD.QBI", VARPTRIM(PADDLE1(1))
+END SELECT
+
+
+SELECT CASE PADDL% '****************** PLAYER 1
+'FOR BLUE PADDLE
+CASE IS = 1
+ WBLAST1 = 0
+ WPS = 15
+ SCAM = 1
+ PADLEN% = 32
+ PADSTOP% = 150
+ 'LASER
+  WDAM% = 1
+  LAS% = 1
+  SLM% = 1
+  LASPEED% = 20
+ERASE W1
+DIM W1(100)
+LINE (50, 50)-(60, 50), 100
+GET (50, 50)-(60, 50), W1
+CLS
+
+ DEF SEG = VARSEG(PADDLE(1))
+ BLOAD "BLUPAD.QBI", VARPTRIM(PADDLE(1))
+'FOR RED PADDLE
+CASE IS = 2
+ WBLAST1 = 2
+ LAS% = 1
+ LASPEED% = 10
+ PADLEN% = 17
+ PADSTOP% = 164
+ SCAM = 3
+ ERASE W1
+ DIM W1(200)
+ DEF SEG = VARSEG(W1(1))
+ BLOAD "FBALL.QBI", VARPTRIM(W1(1))
+ WDAM% = 3
+ WPS = 5
+ DEF SEG = VARSEG(PADDLE(1))
+ BLOAD "REDPAD.QBI", VARPTRIM(PADDLE(1))
+'FOR GRAY PADDLE
+CASE IS = 3
+ WBLAST1 = 15
+ WPS = 3
+ LASPEED% = 15
+ LAS% = 1
+ WDAM% = 5
+ PADLEN% = 22
+ PADSTOP% = 158
+ SCAM = 2
+ ERASE W1
+ DIM W1(200)
+ DEF SEG = VARSEG(W1(1))
+ BLOAD "MISSLE1.QBI", VARPTRIM(W1(1))
+ ERASE WM1
+ DIM WM1(300)
+ DEF SEG = VARSEG(WM1(1))
+ BLOAD "MISSLE2.QBI", VARPTRIM(WM1(1))
+ DEF SEG = VARSEG(PADDLE(1))
+ BLOAD "GRYPAD.QBI", VARPTRIM(PADDLE(1))
+CASE IS = 4
+ WBLAST1 = 5
+ WPS = 3
+ LASPEED% = 15
+ LAS% = 1
+ WDAM% = 2
+ PADLEN% = 22
+ PADSTOP% = 158
+ SCAM = 2
+ ERASE W1
+ DIM W1(200)
+ DEF SEG = VARSEG(W1(1))
+ BLOAD "GRASSL.QBI", VARPTRIM(W1(1))
+ DEF SEG = VARSEG(PADDLE(1))
+ BLOAD "GRNPAD.QBI", VARPTRIM(PADDLE(1))
+END SELECT
+
+CLS
+'CLR = 10 + INT(250 * RND)
+'CIRCLE (10, 10), 10, CLR
+'PAINT (10, 10), CLR
+'GET (10 - 5, 10 - 5)-(10 + 5, 10 + 5), BALL
+'CLS
+'GAME = 2
+DIRK = 0
+DIRK2 = 0
+CONTROLER% = 1
+CONTROLER2% = 1
+ ERASE BALL1
+
+ERASE PS1
+SELECT CASE GAME%
+ CASE IS = 1
+  DIM BALL1(100)
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "REDBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG1_1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG1_1.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  GOTO SET
+ CASE IS = 2
+  CHM = 1
+  SCORE = 20
+  SCORE1 = 20
+DO
+K$ = INKEY$
+IF K$ = CHR$(27) THEN GOTO MENU1
+IF K$ = CHR$(0) + "H" AND SM > 0 THEN SM = SM - 1: CHM = 1
+IF K$ = CHR$(0) + "P" AND SM < 3 THEN SM = SM + 1: CHM = 1
+IF K$ = CHR$(13) THEN
+CLS
+SELECT CASE SM
+ CASE IS = 0
+  DIM BALL1(100)
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "GRYBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG1.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  ERASE PS1
+  GOTO SET.2.PLAYER
+ CASE IS = 1
+  DIM BALL1(100)
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "REDBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG2_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG2_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  ERASE PS1
+  GOTO SET.2.PLAYER
+ CASE IS = 2
+  DIM BALL1(100)
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "BLUBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG3_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG3_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  ERASE PS1
+  GOTO SET.2.PLAYER
+ CASE IS = 3
+  DIM BALL1(100)
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "GRNBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG4_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG4_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  ERASE PS1
+  GOTO SET.2.PLAYER
+END SELECT
+END IF
+IF CHM = 1 THEN
+CHM = 0
+SELECT CASE SM
+ CASE IS = 0
+  WAVEC2 = 1
+  OPEN "PONG1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG1.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  LOCATE 13, 15: PRINT "The Galaxy"
+  ERASE PS1
+ CASE IS = 1
+  WAVEC2 = 0
+  OPEN "PONG2_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG2_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  LOCATE 13, 15: PRINT "The Castle"
+  ERASE PS1
+ CASE IS = 2
+  WAVEC2 = 3
+  OPEN "PONG3_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG3_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  LOCATE 13, 15: PRINT "The Moon"
+  ERASE PS1
+ CASE IS = 3
+  WAVEC2 = 2
+  OPEN "PONG4_2.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG4_2.QBI", VARPTRIM(PS1(1))
+  PUT (0, 0), PS1, PSET
+  LOCATE 13, 13: PRINT "The Grasslands"
+  ERASE PS1
+END SELECT
+END IF
+LOOP
+
+ 'CASE IS = 3
+ ' OPEN "PONG1_1.QBI" FOR INPUT AS #1
+ ' FILESIZE& = LOF(1)
+ ' CLOSE
+ ' ARY = (FILESIZE& - 7) / 2 - 1
+ ' DIM PS1(ARY)
+ ' DEF SEG = VARSEG(PS1(1))
+ ' BLOAD "PONG1_1.QBI", VARPTRIM(PS1(1))
+ ' PUT (0, 0), PS1, PSET
+ ' GOTO SETT
+END SELECT
+
+SET:
+DX = BALL.SPEED: DY = BALL.SPEED
+X = 10 + INT(300 * RND): Y = 10 + INT(164 * RND)
+PUT (X - 5, Y - 5), BALL1
+PUT (2, P1), PADDLE
+P = P1
+GOTO MAIN.1.PLAYER
+
+SET.2.PLAYER:
+        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:"; "           ";
+        LINE (90, 192)-(ABS(SCORE * 2) + 90, 199), 80, BF
+        LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+'
+'DX = BALL.SPEED: DY = BALL.SPEED
+X = 10 + INT(300 * RND): Y = 10 + INT(164 * RND)
+PUT (X - 5, Y - 5), BALL1
+PUT (2, P1), PADDLE
+PUT (300, Q1), PADDLE1
+     IF EG = 1 THEN
+      IF P1M = 1 THEN
+       'PUT (2, P + 18), PADDLE, XOR
+       'PUT (2, P1 + 18), PADDLE, XOR
+       P1M = 0
+       EG = 2
+       PADLEN% = 25
+       PADSTOP% = 160
+       WPS = 2
+      ELSE
+       'PUT (2, P + 18), PADDLE, XOR
+       PUT (2, P1 + 18), PADDLE, XOR
+      END IF
+     END IF
+     IF EG1 = 1 THEN
+      IF P2M = 1 THEN
+       P2M = 0
+       EG1 = 2
+       PADLEN1% = 25
+       PADSTOP1% = 160
+       WQS = 2
+      ELSE
+       PUT (300, Q1 + 18), PADDLE1, XOR
+      END IF
+     END IF
+P1M = 0
+P2M = 0
+P = P1
+Q = Q1
+GOTO MAIN.2.PLAYER
+
+MAIN.1.PLAYER:
+300
+NNUM = NNUM + 1
+IF NNUM >= 64 THEN NNUM = 0
+ SONG 1
+301 X1 = X + DX: Y1 = Y + DY:
+     K$ = INKEY$
+     SELECT CASE K$
+      CASE IS = CHR$(0) + "P"
+       DIRK = 1
+      CASE IS = CHR$(0) + "H"
+       DIRK = 2
+      CASE IS = CHR$(32)
+       DIRK = 0
+      CASE IS = CHR$(27)
+       GOTO END2
+      CASE ELSE
+     END SELECT
+     SELECT CASE DIRK
+     CASE IS = 1
+       P1 = P1 + PADDLE.SPEED
+      CASE IS = 2
+       P1 = P1 - PADDLE.SPEED
+      CASE ELSE
+     END SELECT
+     FOR DE1 = 1 TO COMSPEED1%
+      IF 100 = 100 THEN
+      END IF
+     NEXT DE1
+310 IF P1 < 16 THEN P1 = 16: GOTO 330
+320 IF P1 > PADSTOP% THEN P1 = PADSTOP%
+330 IF X1 >= 12 THEN 350
+340 IF Y1 >= P1 - 2 AND Y1 <= P1 + PADLEN% THEN GOSUB HIT ELSE GOSUB MIS
+350 IF X1 > 288 THEN X1 = 288: DX = -DX: FX 1
+360 IF Y1 < 25 THEN Y1 = 25: DY = -DY: FX 1: GOTO 380
+370 IF Y1 > 172 THEN Y1 = 172: DY = -DY: FX 1
+380 PUT (X - 5, Y - 5), BALL1, XOR
+390 PUT (2, P), PADDLE, XOR
+400 PUT (X1 - 5, Y1 - 5), BALL1, XOR
+410 PUT (2, P1), PADDLE, XOR
+420 X = X1: Y = Y1: P = P1
+430 'FOR C = 1 TO 100: NEXT C
+440 GOTO 300
+
+MAIN.2.PLAYER:
+1300
+IF SCORE <= 0 THEN W = 2: GOTO END2
+IF SCORE1 <= 0 THEN W = 1: GOTO END2
+NNUM = NNUM + 1
+IF NNUM >= 64 THEN NNUM = 0
+ SONG 1
+1301 X1 = X + DX: Y1 = Y + DY:
+     K$ = INKEY$: L$ = INKEY$: A$ = INKEY$
+      IF LEFT$(B$, 1) + LEFT$(K$, 1) = "ZS" AND PADDL% = 2 THEN
+       LASPEED% = 15
+       LAC = 1
+       IF LAS% = 1 AND LAST = 0 THEN
+        LAST = 1
+        YLAS1 = P1 + WPS: XLAS1 = 10
+        PUT (XLAS1, YLAS1), W1, XOR
+        YLAS = YLAS1: XLAS = XLAS1
+       END IF
+      END IF
+     IF K$ + L$ = "SZ" OR K$ + L$ = "ZS" THEN
+      IF PADDL% = 3 AND H1 = 1 AND DEEPF = 0 THEN
+       FX 10
+       DFT = 0
+       DEEPF = 1
+      END IF
+      IF PADDL% = 2 AND P1 + 5 > Q1 - 1 AND P1 + 5 < Q1 + PADLEN1% + 1 THEN
+       FX 10
+        DE = INT(RND * 4) + 1
+        SELECT CASE DE
+         CASE IS = 1
+          SCORE1 = SCORE1 - 1
+          SCORE = SCORE + 1
+         CASE IS = 2
+          SCORE = SCORE - 1
+         CASE IS = 3
+          SCORE1 = SCORE1 + 1
+         CASE IS = 4
+          SCORE = SCORE - 1
+        END SELECT
+       X1 = 10 + INT(300 * RND): Y1 = 10 + INT(164 * RND)
+       'P1 = Y1
+       LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:"; "          ";
+       LINE (90, 192)-(ABS(SCORE * 2) + 90, 199), 80, BF
+       LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+     END IF
+      IF PADDL% = 4 AND EG = 0 THEN
+       PADLEN% = 45
+       PADSTOP% = 140
+       WPS = 12
+       EG = 1
+       PUT (2, P1 + 18), PADDLE, XOR
+      END IF
+      IF P1 - 5 < Y AND P1 + 39 > Y AND X < 60 AND PADDL% = 1 THEN
+       DX = -DX
+      END IF
+     END IF
+     IF K$ + L$ = "QZ" OR K$ + L$ = "ZQ" THEN
+       IF LAS% = 1 AND LAST = 0 AND PADDL% = 1 THEN
+        LAST = 1
+        YLAS1 = P1 + 1: XLAS1 = 10
+        PUT (XLAS1, YLAS1), W1, XOR
+        YLAS = YLAS1: XLAS = XLAS1
+       END IF
+     END IF
+     IF K$ + L$ = "AZ" OR K$ + L$ = "ZA" THEN
+       IF LAS% = 1 AND LAST = 0 AND PADDL% = 1 THEN
+        LAST = 1
+        YLAS1 = P1 + 29: XLAS1 = 10
+        PUT (XLAS1, YLAS1), W1, XOR
+        YLAS = YLAS1: XLAS = XLAS1
+       END IF
+     END IF
+     SELECT CASE LEFT$(K$, 1)
+      CASE IS = "A"
+       DIRK = 1
+      CASE IS = "Q"
+       DIRK = 2
+      CASE IS = "S"
+       IF LAS% = 1 AND LAST = 0 THEN
+        IF PADDL% = 3 THEN   'GRAY PADDLE
+         FX 20
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 50
+         PUT (XLAS1 - 30, YLAS1), WM1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+         MI = 0
+        ELSE
+         IF PADDL% = 2 THEN FX 21   'RED PADDLE
+         IF PADDL% = 1 THEN FX 16   'BLUE PADDLE
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 10
+         PUT (XLAS1, YLAS1), W1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+        END IF
+       END IF
+      CASE IS = CHR$(27)
+       GOTO END2
+      CASE ELSE
+       SELECT CASE L$
+      CASE IS = "A"
+       DIRK = 1
+      CASE IS = "Q"
+       DIRK = 2
+      CASE IS = "S"
+       IF LAS% = 1 AND LAST = 0 THEN
+        IF PADDL% = 3 THEN
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 50
+         PUT (XLAS1 - 30, YLAS1), WM1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+         MI = 0
+        ELSE
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 10
+         PUT (XLAS1, YLAS1), W1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+        END IF
+       END IF
+      CASE IS = CHR$(32)
+       DIRK = 0
+      CASE IS = CHR$(27)
+       GOTO END2
+      CASE ELSE
+       SELECT CASE A$
+      CASE IS = "A"
+       DIRK = 1
+      CASE IS = "Q"
+       DIRK = 2
+      CASE IS = "S"
+       IF LAS% = 1 AND LAST = 0 THEN
+        IF PADDL% = 3 THEN
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 50
+         PUT (XLAS1 - 30, YLAS1), WM1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+         MI = 0
+        ELSE
+         LAST = 1
+         YLAS1 = P1 + WPS: XLAS1 = 10
+         PUT (XLAS1, YLAS1), W1, XOR
+         YLAS = YLAS1: XLAS = XLAS1
+        END IF
+       END IF
+      CASE IS = CHR$(32)
+       DIRK = 0
+      CASE IS = CHR$(27)
+       GOTO END2
+      CASE ELSE
+      END SELECT
+     END SELECT
+    END SELECT
+     IF K$ + L$ = "AQ" OR K$ + L$ = "QA" THEN
+      DIRK = 0
+     END IF
+     IF DEEPF1 = 1 THEN
+      DFT1 = DFT1 + 1
+      DIRK = 0
+      IF DFT1 >= 30 THEN DEEPF1 = 0
+     END IF
+     SELECT CASE DIRK
+      CASE IS = 1
+       P1 = P1 + PADDLE.SPEED
+      CASE IS = 2
+       P1 = P1 - PADDLE.SPEED
+      CASE ELSE
+     END SELECT
+     IF LAST = 1 THEN
+      XLAS1 = XLAS1 + LASPEED%
+     IF PADDL% = 3 THEN
+      IF MI = 0 THEN
+       MI = 1
+       PUT (XLAS - 30, YLAS), WM1
+       PUT (XLAS1, YLAS1), W1
+      ELSE
+       MI = 0
+       PUT (XLAS, YLAS), W1
+       PUT (XLAS1 - 30, YLAS1), WM1
+      END IF
+     GOTO 5000
+     END IF
+      PUT (XLAS, YLAS), W1
+      PUT (XLAS1, YLAS1), W1
+5000  XLAS = XLAS1: YLAS = YLAS1
+      IF XLAS1 > 265 THEN
+       IF YLAS1 > Q1 - WBLAST1 AND YLAS1 < Q1 + PADLEN1% + WBLAST1 THEN
+        FX 3
+        H1 = 1
+IF SCORE1 >= 0 THEN
+ SCORE1 = SCORE1 - WDAM%
+ELSE
+ W = 1
+ GOTO END2
+END IF
+        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:"; "          ";
+        LINE (90, 192)-(ABS(SCORE * 2) + 90, 199), 80, BF
+        LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+        IF PADDL% = 3 THEN
+         IF MI = 0 THEN
+          PUT (XLAS - 30, YLAS), WM1
+         ELSE
+          PUT (XLAS, YLAS), W1
+         END IF
+        ELSE
+         PUT (XLAS, YLAS), W1
+        END IF
+        XLAS1 = 0
+        YLAS1 = 0
+        LAST = 0
+        IF PADDL% = 2 THEN LASPEED% = 10
+       ELSE
+        IF PADDL% = 3 THEN
+         IF MI = 0 THEN
+          PUT (XLAS - 30, YLAS), WM1
+         ELSE
+          PUT (XLAS, YLAS), W1
+         END IF
+        ELSE
+         PUT (XLAS, YLAS), W1
+        END IF
+        XLAS1 = 0
+        YLAS1 = 0
+        LAST = 0
+        IF PADDL% = 2 THEN LASPEED% = 10
+       END IF
+      END IF
+     END IF
+      IF B$ + K$ = CHR$(0) + "O" + CHR$(0) + "S" AND PADDL1% = 2 THEN
+       LASPEED1% = 15
+       IF LAS1% = 1 AND LAST1 = 0 THEN
+        LAST1 = 1
+        YLAS3 = Q1 + WQS: XLAS3 = 280
+        PUT (XLAS3, YLAS3), W, XOR
+        YLAS2 = YLAS3: XLAS2 = XLAS3
+       END IF
+      END IF
+     IF K$ + L$ = CHR$(0) + "S" + CHR$(0) + "O" OR K$ + L$ = CHR$(0) + "O" + CHR$(0) + "S" THEN
+      IF PADDL1% = 3 AND H2 = 1 AND DEEPF1 = 0 THEN
+       FX 10
+       DFT1 = 0
+       DEEPF1 = 1
+      END IF
+      IF PADDL1% = 2 AND Q1 + 5 > P1 - 1 AND Q1 + 5 < P1 + PADLEN% + 1 THEN
+       FX 10
+        DE1 = INT(RND * 4) + 1
+        SELECT CASE DE1
+         CASE IS = 1
+          SCORE = SCORE - 1
+          SCORE1 = SCORE1 + 1
+         CASE IS = 2
+          SCORE1 = SCORE1 - 1
+         CASE IS = 3
+          SCORE = SCORE + 1
+         CASE IS = 4
+          SCORE1 = SCORE1 - 1
+        END SELECT
+       X1 = 10 + INT(300 * RND): Y1 = 10 + INT(164 * RND)
+       'Q1 = Y1
+       LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:"; "          ";
+       LINE (90, 192)-(ABS(SCORE * 2) + 90, 199), 80, BF
+       LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+     END IF
+      IF PADDL1% = 4 AND EG1 = 0 THEN
+       PADLEN1% = 45
+       PADSTOP1% = 140
+       WQS = 12
+       EG1 = 1
+       PUT (300, Q1 + 18), PADDLE1, XOR
+      END IF
+      IF Q1 - 5 < Y AND Q1 + 39 > Y AND X > 240 AND PADDL1% = 1 THEN
+       DX = -DX
+      END IF
+     END IF
+     IF K$ + L$ = CHR$(0) + "O" + CHR$(0) + "H" OR K$ + L$ = CHR$(0) + "H" + CHR$(0) + "O" THEN
+       IF LAS1% = 1 AND LAST1 = 0 AND PADDL1% = 1 THEN
+        LAST1 = 1
+        YLAS3 = Q1 + 1: XLAS3 = 280
+        PUT (XLAS3, YLAS3), W, XOR
+        YLAS2 = YLAS3: XLAS2 = XLAS3
+       END IF
+     END IF
+     IF K$ + L$ = CHR$(0) + "O" + CHR$(0) + "P" OR K$ + L$ = CHR$(0) + "P" + CHR$(0) + "O" THEN
+       IF LAS1% = 1 AND LAST1 = 0 AND PADDL1% = 1 THEN
+        LAST1 = 1
+        YLAS3 = Q1 + 29: XLAS3 = 280
+        PUT (XLAS3, YLAS3), W, XOR
+        YLAS2 = YLAS3: XLAS2 = XLAS3
+       END IF
+     END IF
+     SELECT CASE K$
+      CASE IS = CHR$(0) + "P"
+       DIRK2 = 1
+      CASE IS = CHR$(0) + "H"
+       DIRK2 = 2
+      CASE IS = CHR$(0)
+       DIRK2 = 0
+      CASE IS = CHR$(0) + "S"
+       IF LAS1% = 1 AND LAST1 = 0 THEN
+        IF PADDL1% = 3 THEN
+         FX 22
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), WM, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+         MI1 = 0
+        ELSE
+         FX 23
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), W, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+        END IF
+       END IF
+      CASE IS = CHR$(27)
+       GOTO ENDING
+      CASE ELSE
+     SELECT CASE L$
+      CASE IS = CHR$(0) + "P"
+       DIRK2 = 1
+      CASE IS = CHR$(0) + "H"
+       DIRK2 = 2
+      CASE IS = CHR$(0)
+       DIRK2 = 0
+      CASE IS = CHR$(0) + "S"
+       IF LAS1% = 1 AND LAST1 = 0 THEN
+        IF PADDL1% = 3 THEN
+         FX 20
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), WM, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+         MI1 = 0
+        ELSE
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), W, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+        END IF
+       END IF
+      CASE IS = CHR$(27)
+       GOTO ENDING
+      CASE ELSE
+     SELECT CASE A$
+      CASE IS = CHR$(0) + "P"
+       DIRK2 = 1
+      CASE IS = CHR$(0) + "H"
+       DIRK2 = 2
+      CASE IS = CHR$(0)
+       DIRK2 = 0
+      CASE IS = CHR$(0) + "S"
+       IF LAS1% = 1 AND LAST1 = 0 THEN
+        IF PADDL1% = 3 THEN
+         FX 20
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), WM, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+         MI1 = 0
+        ELSE
+         LAST1 = 1
+         YLAS3 = Q1 + WQS: XLAS3 = 260
+         PUT (XLAS3, YLAS3), W, XOR
+         YLAS2 = YLAS3: XLAS2 = XLAS3
+        END IF
+       END IF
+      CASE IS = CHR$(27)
+       GOTO ENDING
+      CASE ELSE
+      END SELECT
+     END SELECT
+     END SELECT
+IF K$ + L$ = CHR$(0) + "P" + CHR$(0) + "H" OR K$ + L$ = CHR$(0) + "H" + CHR$(0) + "P" THEN
+ DIRK2 = 0
+END IF
+     IF DEEPF = 1 THEN
+      DFT = DFT + 1
+      DIRK2 = 0
+      IF DFT >= 30 THEN DEEPF = 0
+     END IF
+     SELECT CASE DIRK2
+      CASE IS = 1
+       Q1 = Q1 + PADDLE.SPEED.Q
+      CASE IS = 2
+       Q1 = Q1 - PADDLE.SPEED.Q
+      CASE ELSE
+     END SELECT
+     FOR DE1 = 1 TO COMSPEED1%
+      IF 100 = 100 THEN
+      END IF
+     NEXT DE1
+     IF LAST1 = 1 THEN
+      XLAS3 = XLAS3 - LASPEED1%
+        IF PADDL1% = 3 THEN
+         IF MI1 = 0 THEN
+          MI1 = 1
+          PUT (XLAS2, YLAS2), WM, XOR
+          PUT (XLAS3, YLAS3), W, XOR
+         ELSE
+          MI1 = 0
+          PUT (XLAS2, YLAS2), W, XOR
+          PUT (XLAS3, YLAS3), WM, XOR
+         END IF
+         GOTO 5001
+        END IF
+      PUT (XLAS2, YLAS2), W
+      PUT (XLAS3, YLAS3), W
+5001  XLAS2 = XLAS3: YLAS2 = YLAS3
+      IF XLAS3 < 12 THEN
+       IF YLAS3 > P - WBLAST2 AND YLAS3 < P + PADLEN% + WBLAST2 THEN
+        FX 3
+        H2 = 1
+IF SCORE >= 0 THEN
+ SCORE = SCORE - WDAM1%
+ELSE
+ W = 2
+ GOTO END2
+END IF
+        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:"; "           ";
+        LINE (90, 192)-(ABS(SCORE * 2) + 90, 199), 80, BF
+        LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+        IF PADDL1% = 3 THEN
+         IF MI1 = 0 THEN
+          PUT (XLAS2, YLAS2), WM, XOR
+         ELSE
+          PUT (XLAS2, YLAS2), W, XOR
+         END IF
+        ELSE
+         PUT (XLAS2, YLAS2), W
+        END IF
+        IF PADDL1% = 2 THEN LASPEED1% = 10
+        XLAS3 = 0
+        YLAS3 = 0
+        LAST1 = 0
+       ELSE
+        IF PADDL1% = 3 THEN
+         IF MI1 = 0 THEN
+          PUT (XLAS2, YLAS2), WM, XOR
+         ELSE
+          PUT (XLAS2, YLAS2), W, XOR
+         END IF
+        ELSE
+         PUT (XLAS2, YLAS2), W
+        END IF
+        IF PADDL1% = 2 THEN LASPEED1% = 10
+        XLAS3 = 0
+        YLAS3 = 0
+        LAST1 = 0
+       END IF
+      END IF
+     END IF
+
+1310 IF P1 <= 16 THEN P1 = 16: GOTO 1321
+1320 IF P1 >= PADSTOP% THEN P1 = PADSTOP%
+1321 IF Q1 <= 16 THEN Q1 = 16: GOTO 1330
+1322 IF Q1 >= PADSTOP1% THEN Q1 = PADSTOP1%
+1330
+1340 IF X1 < 12 THEN
+IF Y1 > P1 - 2 AND Y1 <= P1 + PADLEN% THEN GOSUB HIT1 ELSE GOSUB MIS1
+END IF
+1345 IF X1 > 290 THEN
+IF Y1 > Q1 - 2 AND Y1 <= Q1 + PADLEN1% THEN GOSUB HIT2 ELSE GOSUB MIS2
+END IF
+1360 IF Y1 < 25 THEN Y1 = 25: DY = -DY: FX 1: GOTO 1380
+1370 IF Y1 > 172 THEN Y1 = 172: DY = -DY: FX 1
+1380 PUT (X - 5, Y - 5), BALL1, XOR
+1390 PUT (2, P), PADDLE, XOR
+1395 PUT (300, Q), PADDLE1, XOR
+1400 PUT (X1 - 5, Y1 - 5), BALL1, XOR
+     IF EG = 1 THEN
+      PUT (2, P + 18), PADDLE, XOR
+      PUT (2, P1 + 18), PADDLE, XOR
+     END IF
+     IF EG1 = 1 THEN
+      PUT (300, Q + 18), PADDLE1, XOR
+      PUT (300, Q1 + 18), PADDLE1, XOR
+     END IF
+1410 PUT (2, P1), PADDLE, XOR
+1415 PUT (300, Q1), PADDLE1, XOR
+1420 X = X1: Y = Y1: P = P1: Q = Q1: B$ = K$
+TIM = TIM + 1
+1440 GOTO 1300
+
+SETT:
+X = 10 + INT(300 * RND): Y = 10 + INT(164 * RND)
+PUT (X - 5, Y - 5), BALL1
+PUT (2, P1), PADDLE
+EN1 = INT(RND * 150) + 1
+PUT (OBJX%, EN1), OBJ1
+EN2 = EN1: P = P1
+GOTO MAIN.1.PLAYER.TOURNEMENT
+
+MAIN.1.PLAYER.TOURNEMENT:
+2300
+NNUM = NNUM + 1
+IF NNUM >= 64 THEN NNUM = 0
+ SONG 1
+'IF NNUM >= 14 THEN NNUM = 0
+' SONG 3
+2301 X1 = X + DX: Y1 = Y + DY:
+   SELECT CASE CONTROLER%
+    CASE IS = 1
+2302  DUMMY = STICK(0)
+2303  IF STICK(1) > XMAXS% - 10 THEN P1 = P1 + PADDLE.SPEED
+2305  IF STICK(1) < XMINS% + 10 THEN P1 = P1 - PADDLE.SPEED
+    CASE IS = 2
+     K$ = INKEY$
+     SELECT CASE K$
+      CASE IS = CHR$(0) + "P"
+       DIRK = 1
+      CASE IS = CHR$(0) + "H"
+       DIRK = 2
+      CASE IS = CHR$(0) + "S"
+       IF LAS% = 1 AND LAST = 0 THEN
+        LAST = 1
+        YLAS1 = P1 + 15: XLAS1 = 10
+        PUT (XLAS1, YLAS1), LASER1, XOR
+        YLAS = YLAS1: XLAS = XLAS1
+       END IF
+      CASE IS = CHR$(32)
+       DIRK = 0
+      CASE IS = CHR$(27)
+       GOTO END2
+      CASE ELSE
+     END SELECT
+     SELECT CASE DIRK
+     CASE IS = 1
+       P1 = P1 + PADDLE.SPEED
+      CASE IS = 2
+       P1 = P1 - PADDLE.SPEED
+      CASE ELSE
+     END SELECT
+     IF LAST = 1 THEN
+      XLAS1 = XLAS1 + LASPEED%
+      PUT (XLAS, YLAS), LASER1
+      PUT (XLAS1, YLAS1), LASER1
+      XLAS = XLAS1: YLAS = YLAS1
+      SEN1% = 200
+      IF XLAS1 > OBJX% - 5 THEN
+       IF YLAS1 > EN2 - 2 AND YLAS1 < EN2 + 30 THEN
+        FX 3
+        MONEY = MONEY + SEN1%
+        LOCATE 1, 5: PRINT "$"; MONEY;
+        PUT (XLAS, YLAS), LASER1
+        XLAS1 = 0
+        YLAS1 = 0
+        LAST = 0
+        EN1T = 0
+        ED1 = 30
+       ELSE
+        PUT (XLAS, YLAS), LASER1
+        XLAS1 = 0
+        YLAS1 = 0
+        LAST = 0
+       END IF
+      END IF
+     END IF
+     IF EN1T = 0 THEN EN1 = INT(RND * 150) + 1
+     IF EN1 > 20 AND EN1T = 0 THEN
+      PUT (OBJX%, EN2), OBJ1
+      PUT (OBJX%, EN1), OBJ1
+      EN2 = EN1
+      EN1T = 1
+      ED1 = 40
+     END IF
+     ED1 = ED1 - 1
+     IF EN1T = 1 AND ED1 < 1 THEN EN1T = 0
+     FOR DE1 = 1 TO COMSPEED1%
+      IF 100 = 100 THEN
+      END IF
+     NEXT DE1
+    END SELECT
+2310 IF P1 < 16 THEN P1 = 16: GOTO 2330
+2320 IF P1 > PADSTOP% THEN P1 = PADSTOP%
+2330 IF X1 >= 12 THEN 2350
+2340 IF Y1 >= P1 - 2 AND Y1 <= P1 + PADLEN% THEN GOSUB HITT ELSE GOSUB MIST
+2350 IF X1 > COURT.LEN% THEN X1 = COURT.LEN%: DX = -DX: FX 1
+2360 IF Y1 < 25 THEN Y1 = 25: DY = -DY: FX 1: GOTO 2380
+2370 IF Y1 > 172 THEN Y1 = 172: DY = -DY: FX 1
+2380 PUT (X - 5, Y - 5), BALL1
+2390 PUT (2, P), PADDLE, XOR
+2400 PUT (X1 - 5, Y1 - 5), BALL1
+2410 PUT (2, P1), PADDLE, XOR
+2420 X = X1: Y = Y1: P = P1
+2430 'FOR C = 1 TO 100: NEXT C
+2440 GOTO 2300
+
+HITT:
+X1 = 12: DX = -DX: SCORE = SCORE + 1: FX 2
+MONEY = MONEY + 100
+IF SCORE >= 20 THEN GOTO END3
+'BALL.SPEED = BALL.SPEED + 2: PADDLE.SPEED = PADDLE.SPEED + 1
+IF BALL.SPEED > 14 THEN BALL.SPEED = 14
+IF PADDLE.SPEED > 14 THEN PADDLE.SPEED = 14
+'DX = BALL.SPEED: DY = BALL.SPEED
+LOCATE 1, 5: PRINT "$"; MONEY;
+LOCATE 25, 7: PRINT "SCORE:"; SCORE; "   "; "SCORE:"; BSCORE; : RETURN 2360
+
+MIST:
+IF X1 >= 5 THEN RETURN 2360
+PUT (X - 5, Y - 5), BALL1: PUT (2, P), PADDLE: PUT (OBJX%, EN2), OBJ1
+FX 3
+IF SHIELDS > 0 THEN
+ SHIELDS = SHIELDS - 1
+ELSE
+ BSCORE = 20
+ GOTO END3
+END IF
+'BALL.SPEED = 6: PADDLE.SPEED = 8
+BSCORE = BSCORE + BPOINTS%
+IF BSCORE >= 20 THEN GOTO END3
+LOCATE 25, 7: PRINT "SCORE:"; SCORE; "   "; "SCORE:"; BSCORE;
+FOR I = 1 TO 20000: NEXT I: RETURN SETT
+
+HIT:
+X1 = 12: DX = -DX: SCORE = SCORE + 1: FX 2
+'BALL.SPEED = BALL.SPEED + 2: PADDLE.SPEED = PADDLE.SPEED + 1
+IF BALL.SPEED > 14 THEN BALL.SPEED = 14
+IF PADDLE.SPEED > 14 THEN PADDLE.SPEED = 14
+'DX = BALL.SPEED: DY = BALL.SPEED
+LOCATE 25, 7: PRINT "SCORE"; SCORE; : RETURN 360
+
+MIS:
+IF X1 >= 5 THEN RETURN 360
+PUT (X - 5, Y - 5), BALL1: PUT (2, P), PADDLE
+FX 3
+'BALL.SPEED = 6: PADDLE.SPEED = 8
+IF SCORE > 0 THEN SCORE = SCORE - 1
+LOCATE 25, 7: PRINT "SCORE:"; SCORE;
+FOR I = 1 TO 20000: NEXT I: RETURN SET
+
+HIT1:
+X1 = 12: DX = -DX: FX 2
+'BALL.SPEED = BALL.SPEED + 2: PADDLE.SPEED = PADDLE.SPEED + 1
+'IF BALL.SPEED > 14 THEN BALL.SPEED = 14
+'IF PADDLE.SPEED > 14 THEN PADDLE.SPEED = 14
+'IF PADDLE.SPEED.Q > 14 THEN PADDLE.SPEED.Q = 14
+'DX = BALL.SPEED: DY = BALL.SPEED
+'IF SCORE <= 0 THEN GOTO END2
+'LOCATE 25, 7: PRINT "SCORE:"; SCORE; "  "; "SCORE:"; SCORE1;
+'        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:";
+'        LINE (90, 180)-(SCORE * 2 + 90, 190), 120, BF
+'        LINE (180, 180)-(SCORE1 * 2 + 180, 190), 120, BF
+RETURN 1360
+
+MIS1:
+IF X1 >= 5 THEN RETURN 1360
+PUT (X - 5, Y - 5), BALL1: PUT (2, P), PADDLE: PUT (300, Q), PADDLE1
+     P1M = 1
+     IF EG = 1 THEN
+      PUT (2, P + 18), PADDLE, XOR
+  '    PUT (2, P1 + 18), PADDLE, XOR
+      P1M = 1
+     END IF
+     IF EG1 = 1 THEN
+      PUT (300, Q + 18), PADDLE1, XOR
+     END IF
+FX 3
+'BALL.SPEED = 6: PADDLE.SPEED = 8
+IF SCORE > 0 THEN
+ SCORE = SCORE - 1
+ELSE
+ W = 2
+ GOTO END2
+END IF
+'LOCATE 25, 7: PRINT "SCORE:"; SCORE; "  "; "SCORE:"; SCORE1;
+'        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:";
+'        LINE (90, 192)-(SCORE * 2 + 90, 199), 80, BF
+'        LINE (210, 192)-(SCORE1 * 2 + 210, 199), 80, BF
+FOR I = 1 TO COMSPEED% * 2: NEXT I: RETURN SET.2.PLAYER
+
+HIT2:
+X1 = 295: DX = -DX: FX 2
+'BALL.SPEED = BALL.SPEED + 2: PADDLE.SPEED = PADDLE.SPEED + 1
+'IF BALL.SPEED > 14 THEN BALL.SPEED = 14
+'IF PADDLE.SPEED > 14 THEN PADDLE.SPEED = 14
+'DX = BALL.SPEED: DY = BALL.SPEED
+'IF SCORE1 >= 20 THEN GOTO END2
+'LOCATE 25, 7: PRINT "SCORE:"; SCORE; "  "; "SCORE:"; SCORE1;
+RETURN 1360
+
+MIS2:
+IF X1 <= 300 THEN RETURN 1360
+PUT (X - 5, Y - 5), BALL1: PUT (300, Q), PADDLE1: PUT (2, P), PADDLE
+     IF EG = 1 THEN
+      PUT (2, P + 18), PADDLE, XOR
+    '  PUT (2, P1 + 18), PADDLE, XOR
+     END IF
+     IF EG1 = 1 THEN
+      PUT (300, Q + 18), PADDLE1, XOR
+      P2M = 1
+     END IF
+FX 3
+'BALL.SPEED = 6: PADDLE.SPEED = 8
+IF SCORE1 > 0 THEN
+ SCORE1 = SCORE1 - 1
+ELSE
+ W = 1
+ GOTO END2
+END IF
+'LOCATE 25, 7: PRINT "SCORE:"; SCORE; "  "; "SCORE:"; SCORE1;
+'        LOCATE 25, 7: PRINT "LIFE:"; "          "; "LIFE:";"          ";
+'        LINE (90, 192)-(SCORE * 2 + 90, 199), 80, BF
+'        LINE (210, 192)-(ABS(SCORE1 * 2) + 210, 199), 80, BF
+
+FOR I = 1 TO COMSPEED% * 2: NEXT I: RETURN SET.2.PLAYER
+
+END2:
+CLS
+IF W = 1 THEN
+ LOCATE 12, 13: PRINT "Player 1 Wins"
+ELSE
+ LOCATE 12, 13: PRINT "Player 2 Wins"
+END IF
+ERASE PADDLE, PADDLE1
+SLEEP 3
+SLEEP 2
+SLEEP 1
+GOTO MENU1
+
+END3:
+CLS
+IF SCORE > BSCORE THEN
+ LOCATE 12, 13: PRINT "Player 1 Wins"
+ WIN = 1
+ WINS = WINS + 1
+ BAL = BAL + 1
+IF RANK > 1 THEN RANK = RANK - 1
+ MONEY = MONEY + 500
+ELSE
+ LOCATE 12, 13: PRINT "Computer Wins"
+ WIN = 0
+ LOSES = LOSES + 1
+ MONEY = MONEY - 500
+END IF
+SLEEP 3
+SLEEP 2
+SLEEP 1
+GOTO MENUT
+
+MENUTSET:
+LAS% = 0
+SCORE = 0
+MONEY = 0
+WINS = 0
+RANK = 4
+LOSES = 0
+PADDLETEXT$ = "BLUE PADDLE"
+WEAPONTEXT$ = "NONE"
+PADLEN% = 36
+PADSTOP% = 150
+SCAM = 2
+SHIELDS = 10
+LEVEL = 3
+MONEY = 10000
+
+MENUT:
+CLS
+LINE (0, 40)-(320, 40), 70
+LINE (0, 80)-(230, 80), 70
+LINE (230, 40)-(320, 100), 70, B
+LINE (0, 145)-(320, 145), 70
+LOCATE 8, 3: PRINT "SHIELDS:"
+LINE (80, 56)-(SHIELDS * 10 + 80, 62), 69, BF
+LOCATE 7, 31: PRINT "WINS: "; WINS
+LOCATE 8, 31: PRINT "LOSES:"; LOSES
+LOCATE 10, 31: PRINT "RANK:"; RANK
+LOCATE 17, 3: PRINT PADDLETEXT$; "        "; WEAPONTEXT$;
+LOCATE 20, 3: PRINT "PADDLE SPEED:";
+LINE (125, 153)-(PADDLESPEED% * 11 + 125, 158), 69, BF
+LOCATE 22, 3: PRINT "LASER SPEED:";
+LINE (125, 169)-(LASPEED1 * 11 + 125, 174), 69, BF
+LOCATE 1, 5: PRINT "$"; MONEY;
+   FONT "START", 20, 20, 8, 0, 29, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 120, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 120, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 120, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 120, 0, 0
+MTP = 0
+CHH = 0
+DO
+GOSUB MMUSIC
+K$ = INKEY$
+IF K$ = CHR$(0) + "K" AND MTP > 0 THEN MTP = MTP - 1: CHH = 1
+IF K$ = CHR$(0) + "M" AND MTP < 4 THEN MTP = MTP + 1: CHH = 1
+IF K$ = CHR$(13) THEN
+ FX 15
+ SELECT CASE MTP
+  CASE IS = 0
+DIRK = 0
+DIRK2 = 0
+CONTROLER% = 2
+   'GAME = 3
+   BSCORE = 0
+   SCORE = 0
+   ERASE PADDLE
+   ERASE BALL1
+   ERASE OBJ1
+'  OPEN "BLUPAD.QBI" FOR INPUT AS #1
+'  FILESIZE& = LOF(1)
+'  CLOSE
+'  ARY = (FILESIZE& - 7) / 2 - 1
+'   PRINT ARY
+'   SLEEP 1
+'   SLEEP 3
+   DIM OBJ1(201)
+   DIM BALL1(100)
+   DIM PADDLE(150)
+   LEVEL = LEVEL + 1
+   IF LEVEL >= 4 THEN LEVEL = 1
+
+ DEF SEG = VARSEG(PADDLE(1))
+ BLOAD "BLUPAD.QBI", VARPTRIM(PADDLE(1))
+
+ SELECT CASE LEVEL
+ CASE IS = 1
+  BPOINTS% = 2
+  COURT.LEN% = 288
+  OBJX% = 288
+   DEF SEG = VARSEG(BALL1(1))
+   BLOAD "GRYBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG1_1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  ERASE PS1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG1_1.QBI", VARPTRIM(PS1(1))
+  CLS
+  PUT (0, 0), PS1, PSET
+  DEF SEG = VARSEG(OBJ1(1))
+  BLOAD "GRASS1.QBI", VARPTRIM(OBJ1(1))
+ CASE IS = 2
+  BPOINTS% = 3
+  COURT.LEN% = 288
+  OBJX% = 260
+   DEF SEG = VARSEG(BALL1(1))
+   BLOAD "REDBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG2_1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  ERASE PS1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG2_1.QBI", VARPTRIM(PS1(1))
+  CLS
+  PUT (0, 0), PS1, PSET
+  DEF SEG = VARSEG(OBJ1(1))
+  BLOAD "SHIP1.QBI", VARPTRIM(OBJ1(1))
+ CASE IS = 3
+  BPOINTS% = 4
+  COURT.LEN% = 273
+  OBJX% = 271
+  DEF SEG = VARSEG(BALL1(1))
+  BLOAD "BLUBALL.QBI", VARPTRIM(BALL1(1))
+  OPEN "PONG3_1.QBI" FOR INPUT AS #1
+  FILESIZE& = LOF(1)
+  CLOSE
+  ARY = (FILESIZE& - 7) / 2 - 1
+  ERASE PS1
+  DIM PS1(ARY)
+  DEF SEG = VARSEG(PS1(1))
+  BLOAD "PONG3_1.QBI", VARPTRIM(PS1(1))
+  CLS
+  PUT (0, 0), PS1, PSET
+  DEF SEG = VARSEG(OBJ1(1))
+  BLOAD "SHIP1.QBI", VARPTRIM(OBJ1(1))
+  END SELECT
+  GOTO SETT
+ CASE IS = 1
+  GOTO UPGRADE
+ CASE IS = 2
+  GOTO MENU1
+ CASE IS = 3
+
+ CASE IS = 4
+
+ END SELECT
+END IF
+IF CHH = 1 THEN
+ CHH = 0
+ SELECT CASE MTP
+  CASE IS = 0
+   FONT "START", 20, 20, 8, 0, 29, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 120, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 120, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 120, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 120, 0, 0
+  CASE IS = 1
+   FONT "START", 20, 20, 8, 0, 120, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 29, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 120, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 120, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 120, 0, 0
+  CASE IS = 2
+   FONT "START", 20, 20, 8, 0, 120, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 120, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 29, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 120, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 120, 0, 0
+  CASE IS = 3
+   FONT "START", 20, 20, 8, 0, 120, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 120, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 120, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 29, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 120, 0, 0
+  CASE IS = 4
+   FONT "START", 20, 20, 8, 0, 120, 0, 0
+   FONT "UPGRADE", 80, 20, 8, 0, 120, 0, 0
+   FONT "EXIT", 160, 20, 8, 0, 120, 0, 0
+   FONT "SAVE", 210, 20, 8, 0, 120, 0, 0
+   FONT "LOAD", 270, 20, 8, 0, 29, 0, 0
+  END SELECT
+  FX 5
+END IF
+FOR N = 1 TO COMSPEED%
+ IF 100 = 100 THEN QW = 5
+NEXT N
+LOOP
+
+UPGRADE:
+  CLS :
+   FONT "UPGRADE", 120, 10, 8, 0, 40, 0, 120
+   FONT "NEW PADDLE", 100, 30, 8, 0, 29, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 120, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 120, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 120, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 120, 0, 0
+LOCATE 15, 5: PRINT "PADDLE:"; " "; PADDLETEXT$;
+LOCATE 16, 5: PRINT "PADDLE SPEED:"; PADDLESPEED%;
+LOCATE 17, 5: PRINT "LASER SPEED:"; LASPEED1;
+LOCATE 1, 5: PRINT "$"; MONEY;
+MTP = 0
+CHU = 0
+DO
+K$ = INKEY$
+IF K$ = CHR$(0) + "H" AND MTP > 0 THEN MTP = MTP - 1: CHU = 1
+IF K$ = CHR$(0) + "P" AND MTP < 4 THEN MTP = MTP + 1: CHU = 1
+IF K$ = CHR$(13) THEN
+ FX 17
+ SELECT CASE MTP
+  CASE IS = 0
+ 
+  CASE IS = 1
+   IF MONEY >= 1500 THEN
+    FX 16
+    PADDLESPEED% = PADDLESPEED% + 1
+    PADDLE.SPEED = PADDLE.SPEED + 1
+    LOCATE 15, 5: PRINT "PADDLE:"; " "; PADDLETEXT$;
+    LOCATE 16, 5: PRINT "PADDLE SPEED:"; PADDLESPEED%;
+    LOCATE 17, 5: PRINT "LASER SPEED:"; LASPEED1;
+    MONEY = MONEY - 1500
+    LOCATE 1, 5: PRINT "$"; MONEY;
+   ELSE
+    FX 8
+    FONT "You don't have enough Money ", 40, 180, 8, 0, 40, 0, 0
+   END IF
+  CASE IS = 2
+   IF MONEY >= 2500 AND LAS% = 0 THEN
+    FX 16
+    LAS% = 1
+    LASPEED1 = 0
+    LASPEED% = 10
+    MONEY = MONEY - 2500
+    LOCATE 15, 5: PRINT "PADDLE:"; " "; PADDLETEXT$;
+    LOCATE 16, 5: PRINT "PADDLE SPEED:"; PADDLESPEED%;
+    LOCATE 17, 5: PRINT "LASER SPEED:"; LASPEED1;
+    LOCATE 1, 5: PRINT "$"; MONEY;
+   ELSE
+    FX 8
+    FONT "You don't have enough Money ", 40, 180, 8, 0, 40, 0, 0
+   END IF
+  CASE IS = 3
+   IF MONEY >= 2000 AND LASPEED1 < 5 THEN
+    FX 16
+    LASPEED% = LASPEED% + 1
+    LASPEED1 = LASPEED1 + 1
+    MONEY = MONEY - 2000
+    LOCATE 15, 5: PRINT "PADDLE:"; " "; PADDLETEXT$;
+    LOCATE 16, 5: PRINT "PADDLE SPEED:"; PADDLESPEED%;
+    LOCATE 17, 5: PRINT "LASER SPEED:"; LASPEED1;
+    LOCATE 1, 5: PRINT "$"; MONEY;
+   ELSE
+    FX 8
+    FONT "You don't have enough Money ", 40, 180, 8, 0, 40, 0, 0
+   END IF
+  CASE IS = 4
+   EXIT DO
+ END SELECT
+END IF
+IF CHU = 1 THEN
+ CHU = 0
+ SELECT CASE MTP
+  CASE IS = 0
+   FONT "NEW PADDLE", 100, 30, 8, 0, 29, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 120, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 120, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 120, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 120, 0, 0
+  CASE IS = 1
+   FONT "NEW PADDLE", 100, 30, 8, 0, 120, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 29, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 120, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 120, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 120, 0, 0
+  CASE IS = 2
+   FONT "NEW PADDLE", 100, 30, 8, 0, 120, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 120, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 29, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 120, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 120, 0, 0
+  CASE IS = 3
+   FONT "NEW PADDLE", 100, 30, 8, 0, 120, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 120, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 120, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 29, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 120, 0, 0
+  CASE IS = 4
+   FONT "NEW PADDLE", 100, 30, 8, 0, 120, 0, 0
+   FONT "PADDLE SPEED", 100, 40, 8, 0, 120, 0, 0
+   FONT "WEAPONS", 100, 50, 8, 0, 120, 0, 0
+   FONT "WEAPON SPEED", 100, 60, 8, 0, 120, 0, 0
+   FONT "EXIT", 100, 70, 8, 0, 29, 0, 0
+  END SELECT
+ FX 5
+END IF
+LOOP
+GOTO MENUT:
+
+ENDING:
+CLS
+SYSTEM
+
+REM $STATIC
+FUNCTION DetectCard%
+'Detects an AdLib-compatible card.
+'Returns -1 (true) if detected and 0 (false) if not.
+                                                           
+CALL WriteReg(&H4, &H60)
+CALL WriteReg(&H4, &H80)
+B = INP(&H388)
+CALL WriteReg(&H2, &HFF)
+CALL WriteReg(&H4, &H21)
+  FOR X = 0 TO 130
+    A = INP(&H388)
+  NEXT X
+C = INP(&H388)
+CALL WriteReg(&H4, &H60)
+CALL WriteReg(&H4, &H80)
+SUCCESS = 0
+IF (B AND &HE0) = &H0 THEN
+  IF (C AND &HE0) = &HC0 THEN
+    SUCCESS = -1
+  END IF
+END IF
+DetectCard% = SUCCESS
+END FUNCTION
+
+SUB FONT (A$, X%, Y%, stepX%, stepY%, CO%, Background%, SHADOW%)
+extX% = stepX%: extY% = stepY%
+DEF SEG = &HFFA6
+ FOR I% = 1 TO LEN(A$)
+   addr% = 8 * ASC(MID$(A$, I%)) + 14
+IF Background% THEN
+IF Background% = 256 THEN BG% = false ELSE BG% = Background%
+                                                          
+IF I% = LEN(A$) THEN extX% = false: extY% = false
+LINE (X%, Y%)-(X% + 7 + extX%, Y% + 7 + extY%), BG%, BF
+END IF
+FOR j% = 0 TO 7
+mask% = PEEK(addr% + j%) * 128
+IF SHADOW% > 0 THEN
+LINE (X% + 9, Y% + j% + 2)-(X% + 2, Y% + j% + 2), SHADOW%, , mask%
+END IF
+LINE (X% + 7, Y% + j%)-(X%, Y% + j%), CO%, , mask%
+NEXT
+X% = X% + extX%
+Y% = Y% + extY%
+NEXT
+DEF SEG
+END SUB
+
+SUB FX (FXX%)
+IF FXYN = 1 THEN
+SELECT CASE FXX%
+ CASE IS = 1
+  FOR N = 1 TO 45
+   SBPLAY 100, 3, 14, 9, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 2
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 14, 9, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 3
+  FOR N = 1 TO 45
+   SBPLAY 100, 0, 14, 9, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 4
+  FOR N = 1 TO 45
+   SBPLAY 200, 1, 12, 131, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 5
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 8, 9, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 6
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 4, 135, 156
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 7
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 65, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 8
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 36, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 9
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 46, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 10
+  FOR N = 1 TO 45
+   SBPLAY 100, 2, 2, 26, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 11
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 136, 46
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 12
+  FOR N = 1 TO 45
+   SBPLAY 100, 3, 2, 136, 46
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 13
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 36, 136
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 14
+  FOR N = 1 TO 45
+   SBPLAY 100, 0, 0, 36, 149
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 15
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 0, 36, 150
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 16
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 4, 56, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 17
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 236, 246
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 18
+  FOR N = 1 TO 45
+   SBPLAY 100, 0, 0, 5, 150
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 19
+  FOR N = 1 TO 45
+   SBPLAY 100, 1, 2, 235, 19
+  NEXT N
+  CALL WriteReg(&HB0, &H0)
+ CASE IS = 20
+  FOR N = 1 TO 45
+   SBPLAY3 100, 2, 14, 25, 149, 0
+  NEXT N
+  CALL WriteReg(&HB2, &H0)
+ CASE IS = 21
+  FOR N = 1 TO 45
+   SBPLAY3 100, 2, 14, 25, 153, 0
+  NEXT N
+  CALL WriteReg(&HB2, &H0)
+ CASE IS = 22
+  FOR N = 1 TO 45
+   SBPLAY4 100, 2, 14, 25, 149, 0
+  NEXT N
+  CALL WriteReg(&HB3, &H0)
+ CASE IS = 23
+  FOR N = 1 TO 45
+   SBPLAY4 100, 2, 14, 25, 153, 0
+  NEXT N
+  CALL WriteReg(&HB3, &H0)
+END SELECT
+END IF
+IF FXYN = 2 THEN
+ SELECT CASE FXX#
+ CASE IS = 1, 17
+  SOUND 1000, 2
+ CASE IS = 2, 11
+  SOUND 500, 2
+ CASE IS = 3
+  SOUND 50, 2
+ CASE IS = 14
+  FOR I = 100 TO 200 STEP 10
+   SOUND I, 1
+  NEXT I
+ CASE IS = 19
+  FOR I = 100 TO 200 STEP 2
+   SOUND I, 2
+  NEXT I
+END SELECT
+END IF
+END SUB
+
+SUB SBInit
+   '  Initialize the sound card
+                                          
+   '(This is the "quick-and-dirty" method; what it's doing is zeroing out
+
+   '  all of the card's registers.  I haven't had any problems with this.)
+   FOR Q = 1 TO &HF5
+     CALL WriteReg(Q, 0)
+   NEXT Q
+END SUB
+
+SUB SBPLAY (freq%, WAVE%, FEEDBACK%, NMBF%, CLEN%)
+                                                          
+'CALL WriteReg(&H8, 128)
+'9
+CALL WriteReg(&H20, NMBF%)    ' Set modulator's multiple to F
+CALL WriteReg(&H40, 0)    ' Set modulator's level to 40 dB
+CALL WriteReg(&H60, 49)   ' Modulator attack: quick, decay: long
+
+CALL WriteReg(&H80, 240)   ' Modulator sustain: medium, release: medium
+CALL WriteReg(&HA0, freq%)
+'CALL WriteReg(&HB0, 32)
+                                                          
+CALL WriteReg(&H23, 1)   ' Set carrier's multiple to 0
+CALL WriteReg(&H43, Vol%)   ' Set carrier's level to 0 dB
+CALL WriteReg(&H63, 215)   ' Carrier attack: quick, decay: long
+'246
+CALL WriteReg(&H83, CLEN%)  ' Carrier sustain: quick, release: quick
+CALL WriteReg(&HB0, &H21)  ' Octave
+                                                          
+CALL WriteReg(&HE0, WAVE%)         ' Waveform argument for Tom..
+                           ' &H00 is the default, but I felt like
+'14                           ' dropping it in for you.. :)
+CALL WriteReg(&HC0, FEEDBACK%)
+'CALL WriteReg(&HBD, 48)
+' I originally had an extra argument, duration!, but for some reason
+' I wanted to do the timing outside of this sub..  You can change it back
+' if needs require..
+                                                          
+'TimeUp! = TIMER + duation!
+'WHILE TimeUp! > TIMER: WEND  ' Worst you can be off is .182 of a second
+
+END SUB
+
+SUB SBPLAY2 (freq1%, WAVE1%, FEEDBACK1%, NMBF1%, CLEN1%, WAVES1%, NMBF2%, CLEN2%)
+
+CALL WriteReg(&H1, 32)
+'CALL WriteReg(&H8, 128)
+'9
+CALL WriteReg(&H21, NMBF1%)    ' Set modulator's multiple to F
+CALL WriteReg(&H41, 0)    ' Set modulator's level to 40 dB
+CALL WriteReg(&H61, 64)   ' Modulator attack: quick, decay: long
+CALL WriteReg(&H81, CLEN1%)   ' Modulator sustain: medium, release: medium
+CALL WriteReg(&HA1, freq1%)
+
+CALL WriteReg(&H24, NMBF2%)   ' Set carrier's multiple to 0
+CALL WriteReg(&H44, SMVol%)   ' Set carrier's level to 0 dB
+CALL WriteReg(&H64, 215)   ' Carrier attack: quick, decay: long
+CALL WriteReg(&H84, CLEN2%)  ' Carrier sustain: quick, release: quick
+CALL WriteReg(&HB1, &H21)  ' Octave
+                                                      
+CALL WriteReg(&HE1, WAVE1%)         ' Waveform argument for Tom..
+                           ' &H00 is the default, but I felt like
+                           ' dropping it in for you.. :)
+CALL WriteReg(&HE4, WAVEC2%)
+CALL WriteReg(&HC1, FEEDBACK1%)
+' I originally had an extra argument, duration!, but for some reason
+' I wanted to do the timing outside of this sub..  You can change it back
+' if needs require..
+                                                      
+'TimeUp! = TIMER + duation!
+'WHILE TimeUp! > TIMER: WEND  ' Worst you can be off is .182 of a second
+
+END SUB
+
+SUB SBPLAY3 (freq3%, WAVE3%, FEEDBACK3%, NMBF3%, CLEN3%, WAVES3%)
+
+'CALL WriteReg(&H2, 32)
+'CALL WriteReg(&H8, 128)
+'9
+CALL WriteReg(&H22, NMBF3%)    ' Set modulator's multiple to F
+CALL WriteReg(&H42, 0)    ' Set modulator's level to 40 dB
+CALL WriteReg(&H62, 49)   ' Modulator attack: quick, decay: long
+CALL WriteReg(&H82, 240)   ' Modulator sustain: medium, release: medium
+
+CALL WriteReg(&HA2, freq3%)
+
+CALL WriteReg(&H25, 1)   ' Set carrier's multiple to 0
+CALL WriteReg(&H45, Vol%)   ' Set carrier's level to 0 dB
+CALL WriteReg(&H65, 215)   ' Carrier attack: quick, decay: long
+CALL WriteReg(&H85, CLEN3%)  ' Carrier sustain: quick, release: quick
+CALL WriteReg(&HB2, &H21)  ' Octave
+
+CALL WriteReg(&HE2, WAVE3%)         ' Waveform argument for Tom..
+                           ' &H00 is the default, but I felt like
+                           ' dropping it in for you.. :)
+CALL WriteReg(&HE5, WAVES3%)         ' Waveform argument for Tom..
+
+CALL WriteReg(&HC2, FEEDBACK3%)
+' I originally had an extra argument, duration!, but for some reason
+' I wanted to do the timing outside of this sub..  You can change it back
+' if needs require..
+                                                     
+'TimeUp! = TIMER + duation!
+'WHILE TimeUp! > TIMER: WEND  ' Worst you can be off is .182 of a second
+
+END SUB
+
+SUB SBPLAY4 (freq4%, WAVE4%, FEEDBACK4%, NMBF4%, CLEN4%, WAVES4%)
+
+'CALL WriteReg(&H2, 32)
+'CALL WriteReg(&H8, 128)
+'9
+CALL WriteReg(&H28, NMBF4%)    ' Set modulator's multiple to F
+CALL WriteReg(&H48, 0)    ' Set modulator's level to 40 dB
+CALL WriteReg(&H68, 49)   ' Modulator attack: quick, decay: long
+CALL WriteReg(&H88, 240)   ' Modulator sustain: medium, release: medium
+
+CALL WriteReg(&HA3, freq4%)
+
+CALL WriteReg(&H2B, 1)   ' Set carrier's multiple to 0
+CALL WriteReg(&H4B, Vol%)   ' Set carrier's level to 0 dB
+CALL WriteReg(&H6B, 215)   ' Carrier attack: quick, decay: long
+CALL WriteReg(&H8B, CLEN4%)  ' Carrier sustain: quick, release: quick
+CALL WriteReg(&HB3, &H21)  ' Octave
+
+CALL WriteReg(&HE8, WAVE4%)         ' Waveform argument for Tom..
+                           ' &H00 is the default, but I felt like
+                           ' dropping it in for you.. :)
+CALL WriteReg(&HEB, WAVES4%)         ' Waveform argument for Tom..
+
+CALL WriteReg(&HC3, FEEDBACK4%)
+' I originally had an extra argument, duration!, but for some reason
+' I wanted to do the timing outside of this sub..  You can change it back
+' if needs require..
+                                                    
+'TimeUp! = TIMER + duation!
+'WHILE TimeUp! > TIMER: WEND  ' Worst you can be off is .182 of a second
+
+END SUB
+
+SUB SETHUES (HUE() AS HUES, SC, EC)
+DEFINT A-Z
+ OUT &H3C8, SC
+ FOR I = SC TO EC
+   OUT &H3C9, HUE(I).RED: OUT &H3C9, HUE(I).GRN: OUT &H3C9, HUE(I).BLU
+ NEXT
+
+END SUB
+
+SUB SONG (SONGNUM%)
+IF SMO% = 1 THEN
+SELECT CASE SONGNUM%
+CASE IS = 1
+'FOR A = 1 TO 3
+'FOR M = 1 TO 3
+' FOR W = 1 TO 5
+  SELECT CASE NNUM%
+  'FOR N = 1 TO 145
+ CASE IS = 0, 4, 8, 12, 16, 40, 44, 48
+   SBPLAY2 230, 1, 0, 9, 240, 1, 9, 246
+  FOR N = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT N
+  ' SLEEP 1
+  'FOR N = 1 TO 145
+ CASE IS = 1, 5, 9, 13, 17, 41, 45, 49
+  CALL WriteReg(&HB1, &H0)
+   SBPLAY2 175, 1, 0, 9, 240, 1, 9, 246
+  FOR O = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT O
+  'FOR N = 1 TO 45
+  CALL WriteReg(&HB1, &H0)
+ CASE IS = 2, 6, 10, 14, 18, 42, 46, 50
+   SBPLAY2 210, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+ CASE IS = 3, 7, 11, 15, 19, 43, 47, 51
+   SBPLAY2 150, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+ ' NEXT W
+ 'FOR W = 1 TO 5
+ ' FOR N = 1 TO 145
+  CASE IS = 20, 24, 28, 32, 36
+   SBPLAY2 140, 1, 0, 9, 240, 1, 9, 246
+  FOR N = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT N
+'  ' SLEEP 1
+  'FOR N = 1 TO 145
+'  CALL WriteReg(&HB1, &H0)
+  CASE IS = 21, 25, 29, 33, 37
+   SBPLAY2 95, 1, 0, 9, 240, 1, 9, 246
+  FOR O = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT O
+  'FOR N = 1 TO 145
+'  CALL WriteReg(&HB1, &H0)
+  CASE IS = 22, 26, 30, 34, 38
+   SBPLAY2 130, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+'   CALL WriteReg(&HB1, &H0)
+  CASE IS = 23, 27, 31, 35, 39
+   SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+' NEXT W
+'NEXT M
+' FOR W = 1 TO 5
+  'FOR N = 1 TO 145
+  CASE IS = 52, 56, 60
+   SBPLAY2 190, 3, 0, 9, 240, 1, 9, 246
+  FOR N = 1 TO 2
+   CALL WriteReg(&HB1, &H0)
+  NEXT N
+'  ' SLEEP 1
+'  'FOR N = 1 TO 145
+'  CALL WriteReg(&HB1, &H0)
+  CASE IS = 53, 57, 61
+   SBPLAY2 200, 3, 0, 9, 240, 1, 9, 246
+  FOR O = 1 TO 3
+   CALL WriteReg(&HB1, &H0)
+  NEXT O
+'  'FOR N = 1 TO 145
+'  CALL WriteReg(&HB1, &H0)
+  CASE IS = 54, 58, 62
+   SBPLAY2 210, 3, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+'   CALL WriteReg(&HB1, &H0)
+  CASE IS = 55, 59, 63
+   SBPLAY2 220, 3, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 10
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+' NEXT W
+'NEXT A
+ END SELECT
+CASE IS = 2
+ SELECT CASE NNUM%
+  CASE IS = 0, 7, 14          '************
+   SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   IF 100 = 100 THEN DDD = 1
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+  CASE IS = 1, 8, 15           '*************
+  'SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 60
+   IF 100 = 100 THEN DDD = 1
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+  CASE IS = 2, 9, 16           '************
+   SBPLAY2 100, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 40
+   IF 100 = 100 THEN DDD = 1
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+  CASE IS = 3, 10, 17
+   'SBPLAY2 100, 1, 0, 9, 240, 1, 9, 246
+   ' SBPLAY5 250, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 40
+   IF 100 = 100 THEN DDD = 1
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+  CASE IS = 4, 11, 18
+   SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 60
+   IF 100 = 100 THEN DDD = 1
+  NEXT P
+   CALL WriteReg(&HB1, &H0)
+ CASE IS = 5, 12, 19
+  SBPLAY2 140, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 6, 13, 20
+  SBPLAY2 100, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+ '***********************************************
+  CASE IS = 21, 28, 35          '************
+   SBPLAY2 180, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 22, 29, 36           '*************
+  'SBPLAY2 180, 1, 0, 9, 240, 1, 9, 246
+   ' SBPLAY5 250, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 6
+   CALL WriteReg(&HB4, &H0)
+  NEXT P
+  CASE IS = 23, 30, 37           '************
+   SBPLAY2 170, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 24, 31, 38
+   'SBPLAY2 170, 1, 0, 9, 240, 1, 9, 246
+   ' SBPLAY5 250, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB4, &H0)
+  NEXT P
+  CASE IS = 25, 32, 39
+   SBPLAY2 180, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 6
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+ CASE IS = 26, 33, 40
+  SBPLAY2 210, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 27, 34, 41
+  SBPLAY2 170, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+
+
+' CASE IS = 8
+'  SBPLAY2 180, 1, 0, 9, 240, 1, 9, 246
+'  FOR P = 1 TO 4
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+' CASE IS = 9
+'  'REST**********
+'  FOR P = 1 TO 4
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+' CASE IS = 10
+  'REST**********
+'  FOR P = 1 TO 4
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+' CASE IS = 12
+'  SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+'  FOR P = 1 TO 4
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+' CASE IS = 13
+' 'REST**************
+'  FOR P = 1 TO 40
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+' CASE IS = 14
+ 'REST************
+'  FOR P = 1 TO 40
+'   CALL WriteReg(&HB1, &H0)
+'  NEXT P
+'
+ END SELECT
+CASE IS = 3
+ SELECT CASE NNUM%
+  CASE IS = 0, 7, 14          '************
+   SBPLAY2 90, 2, 4, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 1', 7, 14          '************
+   'SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 2', 7, 14          '************
+   'SBPLAY3 110, 1, 0, 63, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 3', 7, 14          '************
+   SBPLAY2 130, 2, 4, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 4', 7, 14          '************
+   SBPLAY2 120, 2, 4, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 5', 7, 14          '************
+   'SBPLAY2 110, 3, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 6', 7, 14          '************
+   'SBPLAY2 110, 1, 0, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 7', 0, 14          '************
+   SBPLAY2 90, 3, 6, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 8', 7, 14          '************
+   'SBPLAY2 110, 1, 5, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 9', 7, 14          '************
+   'SBPLAY2 110, 1, 6, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 10', 7, 14          '************
+   SBPLAY2 120, 3, 6, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 11', 7, 14          '************
+   SBPLAY2 110, 3, 6, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 12', 7, 14          '************
+   'SBPLAY2 110, 3, 6, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+  CASE IS = 13', 7, 14          '************
+   'SBPLAY2 110, 3, 5, 9, 240, 1, 9, 246
+  FOR P = 1 TO 4
+   CALL WriteReg(&HB1, &H0)
+  NEXT P
+ END SELECT
+END SELECT
+END IF
+END SUB
+
+SUB WriteReg (Reg%, Value%)
+OUT &H220, Reg%
+FOR X = 0 TO writereg.delay1
+   A = INP(&H220)
+NEXT X
+OUT &H223, Value%
+FOR X = 0 TO writereg.delay2
+   A = INP(&H220)
+NEXT X
+END SUB
+

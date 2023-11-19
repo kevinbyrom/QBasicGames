@@ -1,0 +1,462 @@
+DECLARE SUB BATTLE (NAME$, HP!, MHP!, AR!, WE!, PLACE!, ARMOR$, WEAPON$, NEDAM!, NUDAM!, LV!, ENAME$, UDAM!, EDAM!, EHP!, EPOW!)
+DECLARE SUB ENEMY (NAME$, HP!, MHP!, AR!, WE!, PLACE!, ARMOR$, WEAPON$, NEDAM!, NUDAM!, LV!, ENAME$, UDAM!, EDAM!, EHP!, EPOW!)
+DECLARE SUB PLACE1 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+DECLARE SUB PLACE2 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+DECLARE SUB PLACE3 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+DECLARE SUB PLACE4 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+DECLARE SUB PLACE0 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+DECLARE SUB WHERETO (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+DECLARE SUB LOADORNEW (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+DECLARE SUB CHCR (NAME$, HP, MHP, AR, WE, PLACE, LV)
+DECLARE SUB INTRO ()
+DECLARE SUB CENTER (row, text$)
+DECLARE SUB ARWE (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+CALL INTRO
+CLS
+OPEN "I", 1, "DRAGON.CH1": INPUT #1, OHP, OMHP, OAR, OWE, OPLACE, OLV: CLOSE #1
+OPEN "I", 1, "DRAGON.CH2": INPUT #1, WHP, WMHP, WAR, WWE, WPLACE, WLV: CLOSE #1
+OPEN "I", 1, "DRAGON.CH3": INPUT #1, THP, TMHP, TAR, TWE, TPLACE, TLV: CLOSE #1
+OPEN "I", 1, "DRAGON.CH4": INPUT #1, FHP, FMHP, FAR, FWE, FPLACE, FLV: CLOSE #1
+OPEN "I", 1, "DRAGON.CH5": INPUT #1, ONAME$, OARMOR$, OWEAPON$: CLOSE #1
+OPEN "I", 1, "DRAGON.CH6": INPUT #1, WNAME$, WARMOR$, WWEAPON$: CLOSE #1
+OPEN "I", 1, "DRAGON.CH7": INPUT #1, TNAME$, TARMOR$, TWEAPON$: CLOSE #1
+OPEN "I", 1, "DRAGON.CH8": INPUT #1, NAME$, FARMOR$, FWEAPON$: CLOSE #1
+IF OMHP <> 0 THEN LOCATE 6: PRINT "1. "; ONAME$; ", "; OARMOR$; ", "; OWEAPON$; ", "; " HP ="; OHP; "/"; OMHP; ", LV ="; OLV
+IF WMHP <> 0 THEN LOCATE 10: PRINT "2. "; WNAME$; ", "; WARMOR$; ", "; WWEAPON$; ", "; " HP ="; WHP; "/"; WMHP; ", LV ="; WLV
+IF TMHP <> 0 THEN LOCATE 14: PRINT "3. "; TNAME$; ", "; TARMOR$; ", "; TWEAPON$; ", "; " HP ="; THP; "/"; TMHP; ", LV ="; TLV
+IF FMHP <> 0 THEN LOCATE 18: PRINT "4. "; NAME$; ", "; FARMOR$; ", "; FWEAPON$; ", "; " HP ="; FHP; "/"; FMHP; ", LV ="; FLV
+IF OMHP = 0 THEN LOCATE 6: PRINT "1. NEW": OOOO = 1
+IF WMHP = 0 THEN LOCATE 10: PRINT "2. NEW": WWWW = 1
+IF TMHP = 0 THEN LOCATE 14: PRINT "3. NEW": TTTT = 1
+IF FMHP = 0 THEN LOCATE 18: PRINT "4. NEW": FFFF = 1
+626
+CENTER 21, "CHOOSE WHICH ADVENTURE YOU WOULD LIKE TO CONTINUE/BEGIN BY PRESSING THE"
+CENTER 22, "NUMBER 1, 2, 3, OR 4"
+
+SLEEP
+
+IF INKEY$ = "1" THEN
+  IF OOOO = 0 THEN NAME$ = ONAME$: HP = OHP: MHP = OMHP: AR = OAR: WE = OWE: PLACE = OPLACE: LV = OLV: CALL WHERETO(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+  CALL CHCR(NAME$, HP, MHP, AR, WE, PLACE, LV)
+END IF
+
+IF INKEY$ = "2" THEN
+  IF WWWW = 0 THEN NAME$ = WNAME$: HP = WHP: MHP = WMHP: AR = WAR: WE = WWE: PLACE = WPLACE: LV = WLV: CALL WHERETO(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+  CALL CHCR(NAME$, HP, MHP, AR, WE, PLACE, LV)
+END IF
+
+IF INKEY$ = "3" THEN
+  IF TTTT = 0 THEN NAME$ = TNAME$: HP = THP: MHP = TMHP: AR = TAR: WE = TWE: PLACE = TPLACE: LV = TLV: CALL WHERETO(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+  CALL CHCR(NAME$, HP, MHP, AR, WE, PLACE, LV)
+END IF
+
+IF INKEY$ = "4" THEN
+  IF FFFF = 0 THEN NAME$ = NAME$: HP = FHP: MHP = FMHP: AR = FAR: WE = FWE: PLACE = FPLACE: LV = FLV: CALL WHERETO(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+  CALL CHCR(NAME$, HP, MHP, AR, WE, PLACE, LV)
+END IF
+
+SUB ARWE (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+IF AR = 0 THEN ARMOR$ = "CLOTHES": NEDAM = 1
+IF AR = 1 THEN ARMOR$ = "LEATHER": NEDAM = 2
+IF AR = 2 THEN ARMOR$ = "RING MAIL": NEDAM = 4
+IF AR = 3 THEN ARMOR$ = "CHAIN MAIL": NEDAM = 6
+IF AR = 4 THEN ARMOR$ = "BRONZE PLATE": NEDAM = 10
+IF AR = 5 THEN ARMOR$ = "FIELD PLATE": NEDAM = 14
+IF AR = 6 THEN ARMOR$ = "FULL PLATE": NEDAM = 20
+IF AR = 7 THEN ARMOR$ = "DRAGON SCALE": NEDAM = 28
+
+IF WE = 0 THEN WEAPON$ = "DAGGER": NUDAM = 1
+IF WE = 1 THEN WEAPON$ = "SHORT SWORD": NUDAM = 2
+IF WE = 2 THEN WEAPON$ = "SCIMITAR": NUDAM = 4
+IF WE = 3 THEN WEAPON$ = "KHOPESH": NUDAM = 8
+IF WE = 4 THEN WEAPON$ = "LONG SWORD": NUDAM = 12
+IF WE = 5 THEN WEAPON$ = "BASTARD SWORD": NUDAM = 16
+IF WE = 6 THEN WEAPON$ = "TWO-HANDED SWORD": NUDAM = 22
+IF WE = 7 THEN WEAPON$ = "DRAGON SWORD": NUDAM = 30
+END SUB
+
+SUB BATTLE (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+SCREEN 1
+SCREEN 12
+PRINT
+PRINT NAME$; " HAS COME ACROSS A "; ENAME$
+50000
+PRINT "WILL YOU "
+PRINT "   (A)ttack"
+PRINT "       OR"
+PRINT "   (R)un"
+DO
+  KBD$ = UCASE$(INKEY$)
+LOOP UNTIL KBD$ = "A" OR KBD$ = "R"
+IF KBD$ = "R" THEN
+  RANDOMIZE TIMER
+  RUNN = INT(RND * 20)
+  IF RUNN >= 10 THEN
+    PRINT NAME$; " ESCAPES FROM "; ENAME$
+    DO: A$ = INKEY$: LOOP WHILE A$ = ""
+    EXIT SUB
+  ELSEIF RUNN <= 9 THEN
+    PRINT NAME$; " DOES NOT ESCAPE FROM "; ENAME$
+  END IF
+ELSEIF KBD$ = "A" THEN
+  RANDOMIZE TIMER
+  UDAM = INT(RND * (LV + 5)) + LV + 1 + NUDAM
+  PRINT NAME$; " HITS "; ENAME$; " AND DEALS"; UDAM; "POINTS OF DAMAGE"
+  EHP = EHP - UDAM
+END IF
+DO: A$ = INKEY$: LOOP WHILE A$ = ""
+IF EHP <= 0 THEN GOTO 50
+
+RANDOMIZE TIMER
+EDAM = INT(RND * EPOW) + 1 - NEDAM
+IF EDAM <= 0 THEN
+  PRINT ENAME$; " ATTACKS "; NAME$; ", BUT MISSES"
+ELSEIF EDAM > 0 THEN
+  PRINT ENAME$; " HITS "; NAME$; " AND DEALS"; EDAM; "POINTS OF DAMAGE"
+  HP = HP - EDAM
+END IF
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+IF HP <= 0 THEN GOTO 51
+GOTO 50000
+
+51
+IF HP <= 0 THEN PRINT ENAME$; " IS SUCCESSFUL IN SLAYING "; NAME$: END
+50
+PRINT NAME$; " IS SUCCESSFUL IN SLAYING "; ENAME$
+5.699
+END SUB
+
+SUB CENTER (row, text$)
+LOCATE row, 41 - LEN(text$) / 2
+PRINT text$;
+END SUB
+
+SUB CHCR (NAME$, HP, MHP, AR, WE, PLACE, LV)
+1.0001
+CLS
+SCREEN 12
+INPUT "PLEASE NAME YOUR CHARACTER: ", NAME$
+PRINT "IS "; NAME$; " CORRECT? (Y/N)"
+IF NAME$ = "" THEN GOTO 1.0001
+DO
+  KBD$ = UCASE$(INKEY$)
+LOOP UNTIL KBD$ = "Y" OR KBD$ = "N"
+IF KBD$ = "N" THEN GOTO 1.0001
+RANDOMIZE TIMER
+MHP = INT(RND * 20) + 41
+HP = MHP
+AR = 0
+WE = 0
+PLACE = 0
+LV = 1
+
+CALL ARWE(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+CALL WHERETO(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+END SUB
+
+SUB ENEMY (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+RANDOMIZE TIMER
+EN = INT(RND * (LV + 2)) + (PLACE * 2)
+'******REMOVE BEFORE PLAYING!!******
+EN = 1
+
+IF EN = 0 THEN ENAME$ = "GULL": EHP = 10: EPOW = 4
+IF EN = 1 THEN ENAME$ = "BLOB": EHP = 10: EPOW = 4
+IF EN = 2 THEN ENAME$ = "GIANT WORM": EHP = 15: EPOW = 5
+IF EN = 3 THEN ENAME$ = "GIANT BAT": EHP = 20: EPOW = 6
+END SUB
+
+SUB INTRO
+SCREEN 9
+COLOR 4
+DH = 175: DV = 125
+LINE (DH - 8, DV)-(DH + 4, DV + 2), , BF: LINE (DH - 5, DV + 3)-(DH - 8, DV + 19), , BF
+LINE (DH - 4, DV + 17)-(DH + 4, DV + 19), , BF: LINE (DH + 6, DV + 4)-(DH + 8, DV + 16), , BF
+LINE (DH + 4, DV + 3)-(DH + 7, DV + 3): LINE (DH + 5, DV + 2)-(DH + 6, DV + 2)
+PSET (DH + 5, DV + 1): LINE (DH + 4, DV + 16)-(DH + 5, DV + 16)
+LINE (DH + 5, DV + 17)-(DH + 7, DV + 17): PSET (DH + 5, DV + 18)
+
+COLOR 12
+DH = 178: DV = 125
+LINE (DH - 8, DV)-(DH + 4, DV + 2), , BF: LINE (DH - 5, DV + 3)-(DH - 8, DV + 19), , BF
+LINE (DH - 4, DV + 17)-(DH + 4, DV + 19), , BF: LINE (DH + 6, DV + 4)-(DH + 8, DV + 16), , BF
+LINE (DH + 4, DV + 3)-(DH + 7, DV + 3): LINE (DH + 5, DV + 2)-(DH + 6, DV + 2)
+PSET (DH + 5, DV + 1): LINE (DH + 4, DV + 16)-(DH + 5, DV + 16)
+LINE (DH + 5, DV + 17)-(DH + 7, DV + 17): PSET (DH + 5, DV + 18)
+
+COLOR 4
+RH = 200: RV = 125
+LINE (RH - 4, RV)-(RH - 7, RV + 19), , BF: LINE (RH - 3, RV)-(RH + 2, RV + 3), , BF
+PSET (RH + 3, RV + 1): LINE (RH + 3, RV + 2)-(RH + 5, RV + 9), , BF
+LINE (RH + 6, RV + 3)-(RH + 6, RV + 8): LINE (RH + 2, RV + 4)-(RH + 2, RV + 10)
+PSET (RH + 3, RV + 10): LINE (RH - 3, RV + 8)-(RH + 1, RV + 10), , BF
+LINE (RH - 3, RV + 9)-(RH, RV + 9): LINE (RH - 3, RV + 11)-(RH + 5, RV + 19)
+LINE (RH - 2, RV + 11)-(RH + 6, RV + 19): LINE (RH - 1, RV + 11)-(RH + 7, RV + 19)
+LINE (RH, RV + 11)-(RH + 8, RV + 19)
+
+COLOR 12
+RH = 203: RV = 125
+LINE (RH - 4, RV)-(RH - 7, RV + 19), , BF: LINE (RH - 3, RV)-(RH + 2, RV + 3), , BF
+PSET (RH + 3, RV + 1): LINE (RH + 3, RV + 2)-(RH + 5, RV + 9), , BF
+LINE (RH + 6, RV + 3)-(RH + 6, RV + 8): LINE (RH + 2, RV + 4)-(RH + 2, RV + 10)
+PSET (RH + 3, RV + 10): LINE (RH - 3, RV + 8)-(RH + 1, RV + 10), , BF
+LINE (RH - 3, RV + 9)-(RH, RV + 9): LINE (RH - 3, RV + 11)-(RH + 5, RV + 19)
+LINE (RH - 2, RV + 11)-(RH + 6, RV + 19): LINE (RH - 1, RV + 11)-(RH + 7, RV + 19)
+LINE (RH, RV + 11)-(RH + 8, RV + 19)
+
+COLOR 4
+AH = 225: AV = 125
+LINE (AH, AV)-(AH + 1, AV + 1), , BF: LINE (AH - 1, AV + 2)-(AH + 2, AV + 3), , BF
+LINE (AH - 2, AV + 4)-(AH + 3, AV + 5), , BF: LINE (AH - 3, AV + 6)-(AH - 1, AV + 7), , BF
+LINE (AH + 2, AV + 6)-(AH + 4, AV + 7), , BF: LINE (AH - 4, AV + 8)-(AH - 2, AV + 9), , BF
+LINE (AH + 3, AV + 8)-(AH + 5, AV + 9), , BF: LINE (AH - 5, AV + 10)-(AH - 3, AV + 11), , BF
+LINE (AH + 4, AV + 10)-(AH + 6, AV + 11), , BF: LINE (AH - 6, AV + 12)-(AH + 7, AV + 13), , BF
+LINE (AH - 7, AV + 14)-(AH - 5, AV + 15), , BF: LINE (AH + 6, AV + 14)-(AH + 8, AV + 15), , BF
+LINE (AH - 8, AV + 16)-(AH - 6, AV + 17), , BF: LINE (AH + 7, AV + 16)-(AH + 9, AV + 17), , BF
+LINE (AH - 9, AV + 18)-(AH - 7, AV + 19), , BF: LINE (AH + 8, AV + 18)-(AH + 10, AV + 19), , BF
+
+COLOR 12
+AH = 228: AV = 125
+LINE (AH, AV)-(AH + 1, AV + 1), , BF: LINE (AH - 1, AV + 2)-(AH + 2, AV + 3), , BF
+LINE (AH - 2, AV + 4)-(AH + 3, AV + 5), , BF: LINE (AH - 3, AV + 6)-(AH - 1, AV + 7), , BF
+LINE (AH + 2, AV + 6)-(AH + 4, AV + 7), , BF: LINE (AH - 4, AV + 8)-(AH - 2, AV + 9), , BF
+LINE (AH + 3, AV + 8)-(AH + 5, AV + 9), , BF: LINE (AH - 5, AV + 10)-(AH - 3, AV + 11), , BF
+LINE (AH + 4, AV + 10)-(AH + 6, AV + 11), , BF: LINE (AH - 6, AV + 12)-(AH + 7, AV + 13), , BF
+LINE (AH - 7, AV + 14)-(AH - 5, AV + 15), , BF: LINE (AH + 6, AV + 14)-(AH + 8, AV + 15), , BF
+LINE (AH - 8, AV + 16)-(AH - 6, AV + 17), , BF: LINE (AH + 7, AV + 16)-(AH + 9, AV + 17), , BF
+LINE (AH - 9, AV + 18)-(AH - 7, AV + 19), , BF: LINE (AH + 8, AV + 18)-(AH + 10, AV + 19), , BF
+
+COLOR 4
+GH = 250: GV = 125
+LINE (GH - 2, GV)-(GH + 6, GV + 2), , BF: LINE (GH + 7, GV + 1)-(GH + 8, GV + 2), , BF
+LINE (GH + 7, GV + 3)-(GH + 10, GV + 4), , BF: LINE (GH + 8, GV + 5)-(GH + 10, GV + 6), , BF
+LINE (GH - 3, GV + 1)-(GH - 4, GV + 1), , BF: LINE (GH - 3, GV + 2)-(GH - 5, GV + 2), , BF
+LINE (GH - 4, GV + 5)-(GH - 7, GV + 13), , BF    'LINE DOWN
+LINE (GH - 3, GV + 3)-(GH - 6, GV + 4), , BF: LINE (GH - 8, GV + 8)-(GH - 8, GV + 12), , BF
+LINE (GH - 3, GV + 14)-(GH - 7, GV + 15), , BF: LINE (GH - 2, GV + 16)-(GH - 6, GV + 16)
+LINE (GH - 4, GV + 17)-(GH + 7, GV + 18), , BF: LINE (GH - 2, GV + 19)-(GH + 5, GV + 19)
+LINE (GH + 8, GV + 14)-(GH + 10, GV + 17), , BF: LINE (GH + 6, GV + 16)-(GH + 7, GV + 16)
+LINE (GH + 4, GV + 11)-(GH + 10, GV + 12), , BF: LINE (GH + 6, GV + 13)-(GH + 10, GV + 13), , BF
+
+COLOR 12
+GH = 253: GV = 125
+LINE (GH - 2, GV)-(GH + 6, GV + 2), , BF: LINE (GH + 7, GV + 1)-(GH + 8, GV + 2), , BF
+LINE (GH + 7, GV + 3)-(GH + 10, GV + 4), , BF: LINE (GH + 8, GV + 5)-(GH + 10, GV + 6), , BF
+LINE (GH - 3, GV + 1)-(GH - 4, GV + 1), , BF: LINE (GH - 3, GV + 2)-(GH - 5, GV + 2), , BF
+LINE (GH - 4, GV + 5)-(GH - 7, GV + 13), , BF    'LINE DOWN
+LINE (GH - 3, GV + 3)-(GH - 6, GV + 4), , BF: LINE (GH - 8, GV + 8)-(GH - 8, GV + 12), , BF
+LINE (GH - 3, GV + 14)-(GH - 7, GV + 15), , BF: LINE (GH - 2, GV + 16)-(GH - 6, GV + 16)
+LINE (GH - 4, GV + 17)-(GH + 7, GV + 18), , BF: LINE (GH - 2, GV + 19)-(GH + 5, GV + 19)
+LINE (GH + 8, GV + 14)-(GH + 10, GV + 17), , BF: LINE (GH + 6, GV + 16)-(GH + 7, GV + 16)
+LINE (GH + 4, GV + 11)-(GH + 10, GV + 12), , BF: LINE (GH + 6, GV + 13)-(GH + 10, GV + 13), , BF
+
+COLOR 4
+OH = 275: OV = 125
+LINE (OH - 2, OV)-(OH + 6, OV + 2), , BF: LINE (OH + 7, OV + 1)-(OH + 8, OV + 2), , BF
+LINE (OH + 7, OV + 3)-(OH + 10, OV + 4), , BF: LINE (OH + 8, OV + 5)-(OH + 10, OV + 13), , BF
+LINE (OH - 3, OV + 1)-(OH - 4, OV + 1), , BF: LINE (OH - 3, OV + 2)-(OH - 5, OV + 2), , BF
+LINE (OH - 4, OV + 5)-(OH - 7, OV + 13), , BF
+LINE (OH - 3, OV + 3)-(OH - 6, OV + 4), , BF: LINE (OH - 8, OV + 8)-(OH - 8, OV + 12), , BF
+LINE (OH - 3, OV + 14)-(OH - 7, OV + 15), , BF: LINE (OH - 2, OV + 16)-(OH - 6, OV + 16)
+LINE (OH - 4, OV + 17)-(OH + 7, OV + 18), , BF: LINE (OH - 2, OV + 19)-(OH + 5, OV + 19)
+LINE (OH + 8, OV + 14)-(OH + 10, OV + 17), , BF: LINE (OH + 6, OV + 17)-(OH + 7, OV + 17)
+LINE (OH + 12, OV + 7)-(OH + 12, OV + 13): LINE (OH + 11, OV + 5)-(OH + 11, OV + 15)
+
+COLOR 12
+OH = 278: OV = 125
+LINE (OH - 2, OV)-(OH + 6, OV + 2), , BF: LINE (OH + 7, OV + 1)-(OH + 8, OV + 2), , BF
+LINE (OH + 7, OV + 3)-(OH + 10, OV + 4), , BF: LINE (OH + 8, OV + 5)-(OH + 10, OV + 13), , BF
+LINE (OH - 3, OV + 1)-(OH - 4, OV + 1), , BF: LINE (OH - 3, OV + 2)-(OH - 5, OV + 2), , BF
+LINE (OH - 4, OV + 5)-(OH - 7, OV + 13), , BF
+LINE (OH - 3, OV + 3)-(OH - 6, OV + 4), , BF: LINE (OH - 8, OV + 8)-(OH - 8, OV + 12), , BF
+LINE (OH - 3, OV + 14)-(OH - 7, OV + 15), , BF: LINE (OH - 2, OV + 16)-(OH - 6, OV + 16)
+LINE (OH - 4, OV + 17)-(OH + 7, OV + 18), , BF: LINE (OH - 2, OV + 19)-(OH + 5, OV + 19)
+LINE (OH + 8, OV + 14)-(OH + 10, OV + 17), , BF: LINE (OH + 6, OV + 17)-(OH + 7, OV + 17)
+LINE (OH + 12, OV + 7)-(OH + 12, OV + 13): LINE (OH + 11, OV + 5)-(OH + 11, OV + 15)
+
+COLOR 4
+NH = 300: NV = 125
+LINE (NH - 6, NV)-(NH - 9, NV + 19), , BF: LINE (NH - 5, NV + 1)-(NH - 5, NV + 6)
+LINE (NH - 4, NV + 2)-(NH - 4, NV + 8): LINE (NH - 3, NV + 4)-(NH - 3, NV + 9)
+LINE (NH - 2, NV + 5)-(NH - 2, NV + 10): LINE (NH - 1, NV + 6)-(NH - 1, NV + 11)
+LINE (NH, NV + 7)-(NH, NV + 12): LINE (NH + 1, NV + 8)-(NH + 1, NV + 13)
+LINE (NH + 2, NV + 9)-(NH + 2, NV + 14): LINE (NH + 3, NV + 10)-(NH + 3, NV + 15)
+LINE (NH + 4, NV + 11)-(NH + 4, NV + 16): LINE (NH + 5, NV + 12)-(NH + 5, NV + 17)
+LINE (NH + 6, NV + 13)-(NH + 6, NV + 18): LINE (NH + 7, NV)-(NH + 10, NV + 19), , BF
+
+COLOR 12
+NH = 303: NV = 125
+LINE (NH - 6, NV)-(NH - 9, NV + 19), , BF: LINE (NH - 5, NV + 1)-(NH - 5, NV + 6)
+LINE (NH - 4, NV + 2)-(NH - 4, NV + 8): LINE (NH - 3, NV + 4)-(NH - 3, NV + 9)
+LINE (NH - 2, NV + 5)-(NH - 2, NV + 10): LINE (NH - 1, NV + 6)-(NH - 1, NV + 11)
+LINE (NH, NV + 7)-(NH, NV + 12): LINE (NH + 1, NV + 8)-(NH + 1, NV + 13)
+LINE (NH + 2, NV + 9)-(NH + 2, NV + 14): LINE (NH + 3, NV + 10)-(NH + 3, NV + 15)
+LINE (NH + 4, NV + 11)-(NH + 4, NV + 16): LINE (NH + 5, NV + 12)-(NH + 5, NV + 17)
+LINE (NH + 6, NV + 13)-(NH + 6, NV + 18): LINE (NH + 7, NV)-(NH + 10, NV + 19), , BF
+
+COLOR 4
+QH = 350: QV = 125
+LINE (QH - 2, QV)-(QH + 6, QV + 2), , BF: LINE (QH + 7, QV + 1)-(QH + 8, QV + 2), , BF
+LINE (QH + 7, QV + 3)-(QH + 10, QV + 4), , BF: LINE (QH + 8, QV + 5)-(QH + 10, QV + 13), , BF
+LINE (QH - 3, QV + 1)-(QH - 4, QV + 1), , BF: LINE (QH - 3, QV + 2)-(QH - 5, QV + 2), , BF
+LINE (QH - 4, QV + 5)-(QH - 7, QV + 13), , BF
+LINE (QH - 3, QV + 3)-(QH - 6, QV + 4), , BF: LINE (QH - 8, QV + 8)-(QH - 8, QV + 12), , BF
+LINE (QH - 3, QV + 14)-(QH - 7, QV + 15), , BF: LINE (QH - 2, QV + 16)-(QH - 6, QV + 16)
+LINE (QH - 4, QV + 17)-(QH + 8, QV + 18), , BF: LINE (QH - 2, QV + 19)-(QH + 10, QV + 19)
+LINE (QH + 8, QV + 14)-(QH + 10, QV + 17), , BF: LINE (QH + 6, QV + 17)-(QH + 7, QV + 17)
+LINE (QH + 12, QV + 7)-(QH + 12, QV + 13): LINE (QH + 11, QV + 5)-(QH + 11, QV + 15)
+LINE (QH + 2, QV + 14)-(QH + 3, QV + 14): LINE (QH + 2, QV + 15)-(QH + 5, QV + 16), , BF
+
+COLOR 12
+QH = 353: QV = 125
+LINE (QH - 2, QV)-(QH + 6, QV + 2), , BF: LINE (QH + 7, QV + 1)-(QH + 8, QV + 2), , BF
+LINE (QH + 7, QV + 3)-(QH + 10, QV + 4), , BF: LINE (QH + 8, QV + 5)-(QH + 10, QV + 13), , BF
+LINE (QH - 3, QV + 1)-(QH - 4, QV + 1), , BF: LINE (QH - 3, QV + 2)-(QH - 5, QV + 2), , BF
+LINE (QH - 4, QV + 5)-(QH - 7, QV + 13), , BF
+LINE (QH - 3, QV + 3)-(QH - 6, QV + 4), , BF: LINE (QH - 8, QV + 8)-(QH - 8, QV + 12), , BF
+LINE (QH - 3, QV + 14)-(QH - 7, QV + 15), , BF: LINE (QH - 2, QV + 16)-(QH - 6, QV + 16)
+LINE (QH - 4, QV + 17)-(QH + 8, QV + 18), , BF: LINE (QH - 2, QV + 19)-(QH + 10, QV + 19)
+LINE (QH + 8, QV + 14)-(QH + 10, QV + 17), , BF: LINE (QH + 6, QV + 17)-(QH + 7, QV + 17)
+LINE (QH + 12, QV + 7)-(QH + 12, QV + 13): LINE (QH + 11, QV + 5)-(QH + 11, QV + 15)
+LINE (QH + 2, QV + 14)-(QH + 3, QV + 14): LINE (QH + 2, QV + 15)-(QH + 5, QV + 16), , BF
+
+COLOR 4
+UH = 375: UV = 125
+LINE (UH - 5, UV)-(UH - 8, UV + 17), , BF: LINE (UH - 5, UV + 18)-(UH - 6, UV + 19), , BF
+PSET (UH - 7, UV + 18): LINE (UH - 3, UV + 15)-(UH - 4, UV + 19), , BF
+LINE (UH - 1, UV + 16)-(UH - 2, UV + 19), , BF: LINE (UH, UV + 17)-(UH + 2, UV + 19), , BF
+LINE (UH + 3, UV + 16)-(UH + 4, UV + 19), , BF: LINE (UH + 5, UV + 15)-(UH + 6, UV + 19), , BF
+LINE (UH + 7, UV)-(UH + 10, UV + 17), , BF: LINE (UH + 7, UV + 18)-(UH + 8, UV + 19), , BF
+PSET (UH + 9, UV + 18)
+
+COLOR 12
+UH = 378: UV = 125
+LINE (UH - 5, UV)-(UH - 8, UV + 17), , BF: LINE (UH - 5, UV + 18)-(UH - 6, UV + 19), , BF
+PSET (UH - 7, UV + 18): LINE (UH - 3, UV + 15)-(UH - 4, UV + 19), , BF
+LINE (UH - 1, UV + 16)-(UH - 2, UV + 19), , BF: LINE (UH, UV + 17)-(UH + 2, UV + 19), , BF
+LINE (UH + 3, UV + 16)-(UH + 4, UV + 19), , BF: LINE (UH + 5, UV + 15)-(UH + 6, UV + 19), , BF
+LINE (UH + 7, UV)-(UH + 10, UV + 17), , BF: LINE (UH + 7, UV + 18)-(UH + 8, UV + 19), , BF
+PSET (UH + 9, UV + 18)
+
+COLOR 4
+EH = 400: EV = 125
+LINE (EH - 7, EV)-(EH + 6, EV + 2), , BF: LINE (EH - 7, EV + 3)-(EH - 4, EV + 19), , BF
+LINE (EH - 5, EV + 9)-(EH + 4, EV + 11), , BF: LINE (EH - 7, EV + 17)-(EH + 6, EV + 19), , BF
+
+COLOR 12
+EH = 403: EV = 125
+LINE (EH - 7, EV)-(EH + 6, EV + 2), , BF: LINE (EH - 7, EV + 3)-(EH - 4, EV + 19), , BF
+LINE (EH - 5, EV + 9)-(EH + 4, EV + 11), , BF: LINE (EH - 7, EV + 17)-(EH + 6, EV + 19), , BF
+
+COLOR 4
+SH = 425: SV = 125
+LINE (SH - 5, SV)-(SH + 5, SV): LINE (SH - 6, SV + 1)-(SH + 6, SV + 2), , BF
+LINE (SH - 6, SV + 3)-(SH - 4, SV + 9), , BF: LINE (SH - 7, SV + 2)-(SH - 7, SV + 8), , BF
+LINE (SH - 3, SV + 8)-(SH + 4, SV + 10), , BF: LINE (SH - 4, SV + 10)-(SH - 5, SV + 10)
+PSET (SH + 5, SV + 8): LINE (SH + 5, SV + 9)-(SH + 6, SV + 10), , BF
+LINE (SH + 3, SV + 11)-(SH + 6, SV + 17), , BF: PSET (SH + 5, SV + 18)
+LINE (SH + 3, SV + 18)-(SH + 4, SV + 19), , BF: LINE (SH - 5, SV + 17)-(SH + 2, SV + 19), , BF
+LINE (SH - 6, SV + 18)-(SH - 7, SV + 19), , BF: PSET (SH - 6, SV + 17)
+
+COLOR 12
+SH = 428: SV = 125
+LINE (SH - 5, SV)-(SH + 5, SV): LINE (SH - 6, SV + 1)-(SH + 6, SV + 2), , BF
+LINE (SH - 6, SV + 3)-(SH - 4, SV + 9), , BF: LINE (SH - 7, SV + 2)-(SH - 7, SV + 8), , BF
+LINE (SH - 3, SV + 8)-(SH + 4, SV + 10), , BF: LINE (SH - 4, SV + 10)-(SH - 5, SV + 10)
+PSET (SH + 5, SV + 8): LINE (SH + 5, SV + 9)-(SH + 6, SV + 10), , BF
+LINE (SH + 3, SV + 11)-(SH + 6, SV + 17), , BF: PSET (SH + 5, SV + 18)
+LINE (SH + 3, SV + 18)-(SH + 4, SV + 19), , BF: LINE (SH - 5, SV + 17)-(SH + 2, SV + 19), , BF
+LINE (SH - 6, SV + 18)-(SH - 7, SV + 19), , BF: PSET (SH - 6, SV + 17)
+
+COLOR 4
+TH = 450: TV = 125
+LINE (TH - 8, TV)-(TH + 9, TV + 2), , BF: LINE (TH - 1, TV + 3)-(TH + 2, TV + 19), , BF
+
+COLOR 12
+TH = 453: TV = 125
+LINE (TH - 8, TV)-(TH + 9, TV + 2), , BF: LINE (TH - 1, TV + 3)-(TH + 2, TV + 19), , BF
+
+CENTER 23, "Press Any Key To Continue"
+DO: LOOP UNTIL INKEY$ <> ""
+END SUB
+
+SUB LOADORNEW (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+CLS
+SCREEN 12
+CENTER 12, "WOULD YOU LIKE TO LOAD AN OLD GAME? (Y/N)"
+CENTER 15, "PRESS <Q> TO QUIT"
+DO
+  KBD$ = UCASE$(INKEY$)
+LOOP UNTIL KBD$ = "Y" OR KBD$ = "N" OR KBD$ = "Q"
+IF KBD$ = "Q" THEN END
+IF KBD$ = "N" THEN CALL CHCR(NAME$, HP, MHP, AR, WE, PLACE, LV)
+END SUB
+
+SUB PLACE0 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+CLS 2
+PRINT
+PRINT "  THE VILLAGE OF SêMOS"
+PRINT
+PRINT "  WOMAN: "; NAME$; "!  WHERE ARE, YOU?  YOU'LL BE LATE FOR SUPPER!"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  "; NAME$; ": COMING, MOTHER!"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  SUDDENLY, A BRIGHT FLASH APPEARS..."
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  ...AND A DRAGON SWEEPS DOWN, BURNING HALF THE VILLAGE"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  VILLAGERS: AHH!!!!!!  HELP!!!!"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  "; NAME$; "'S MOTHER: "; NAME$; ", RUN!  RUN AWAY FROM HERE!"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  "; NAME$; ": I CAN'T LEAVE YOU! I PROMISED FATHER I'D TAKE CARE OF YOU!"
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT
+PRINT "  "; NAME$; "'S MOTHER: YOU DID TAKE CARE OF ME!  I'M TOO OLD NOW, "; NAME$; "."
+PRINT "      I LOVE YO..U..."
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+CLS 2
+PRINT NAME$, ARMOR$, WEAPON$, HP, MHP, LV, PLACE
+
+DO: A$ = INKEY$: LOOP UNTIL A$ <> ""
+
+CALL ENEMY(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+CALL BATTLE(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+
+SUB PLACE1 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+
+SUB PLACE2 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+
+SUB PLACE3 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+
+    SUB PLACE4 (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+
+SUB WHERETO (NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+CALL ARWE(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV)
+SCREEN 1
+SCREEN 12
+IF PLACE = 0 THEN CALL PLACE0(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+IF PLACE = 1 THEN CALL PLACE1(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+IF PLACE = 2 THEN CALL PLACE2(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+IF PLACE = 3 THEN CALL PLACE3(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+IF PLACE = 4 THEN CALL PLACE4(NAME$, HP, MHP, AR, WE, PLACE, ARMOR$, WEAPON$, NEDAM, NUDAM, LV, ENAME$, UDAM, EDAM, EHP, EPOW)
+END SUB
+

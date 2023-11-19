@@ -1,0 +1,3 @@
+echo Loading Fantasy Power Zone by Fig...
+qbasic /run fpz.bas
+

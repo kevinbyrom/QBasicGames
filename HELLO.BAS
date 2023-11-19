@@ -1,0 +1,2149 @@
+'Press F5 or read on about how your game could
+'be placed as number 1
+
+
+
+'Totally Weird Entertainment
+'3/3/1994
+'Topten
+'Do you think you have a great Qbasic games?
+'Think out of all the others yours is the best?
+'Well then lets find out. Download you great qbasic games
+'to Brooklyn37. Your game will be reviewed by Totally Wierd's
+'review staff. If it is the greatest game then it will say
+'so. It will also let your game be viewed by all the other people
+'that download games in a Qbasic file that will allow anyone
+'to play the top ten games.
+'RULES:
+'the program must be orignal NO PROGRAMS WILL BE REVIEWED IF THE CODE
+'IS COPIED FROM ANOTHER AUTHORS GAME
+'Upload the program once if you upload it we will get and review it.
+'programs for the APRIL TOP TEN List must be recived by march 25 programs
+'after that will got to the MAY TOP TEN list
+'there must be an AOL screen name at the top of the program along with other
+'info EXAMPLE:
+'****************************************************************************
+'Brooklyn37         :Screen Name
+'Uploaded on:3/3/96 :NOT WHEN UPLOADED TO AOL only when uloaded to Brooklyn37
+'A good game great graphics :short little description (a little more descriptive than this example)
+'****************************************************************************
+'Authors will be notified if their program has been put on the list
+'if for some reason an Author doesn't want his work shown then
+'e-mail Brooklyn37.
+'MISCALLENEOUS:
+'If you think you can improve on the TOP TEN menu then e-mail
+'Brooklyn37 and for subject put TOPTEN UPDATE
+'
+'
+'We would like to thank anyone who uploads their program
+'NO TOTALLY WIERD GAMES WILL BE ENTERED INTO THE TOPTEN LIST
+
+
+DECLARE SUB TP ()
+DECLARE SUB TIME ()
+DECLARE SUB NIBBLES ()
+DECLARE SUB GORILLA ()
+DECLARE SUB DIMOND ()
+DECLARE SUB GDEMO ()
+DECLARE SUB AB ()
+DECLARE SUB STNGTE ()
+DECLARE SUB SCREENSAVER ()
+DECLARE SUB DRW ()
+DECLARE SUB HANGMAN ()
+DECLARE SUB MUSIC ()
+DECLARE SUB MENU ()
+DECLARE SUB HELP ()
+DECLARE SUB HONE ()
+
+COMMON SHARED ID AS STRING * 22
+COMMON SHARED SR.NUM AS STRING * 20
+COMMON SHARED SR.NAM AS STRING * 20
+CLOSE
+DEF SEG = 0
+STATUS% = PEEK(&H417)
+POKE &H417, (&H40)
+DEF SEG = 0
+KeyFlags = PEEK(1047)
+IF (KeyFlags AND 32) = 0 THEN
+POKE 1047, KeyFlags OR 32
+END IF
+CALL MENU
+
+SUB AB
+START:
+SCREEN 0
+  DIM ABC$(26)
+  COLOR 14, 1
+  CLS
+  PRINT "This program will alphabetically"
+  PRINT "arrange up to 20 words for you"
+  PRINT "Type 'stop' to stop entering words"
+COLECTINP:
+  W = 1
+ FOR IP = 0 TO 25
+  PRINT W;
+  INPUT ABC$(IP)
+  W = W + 1
+  IF W = 21 THEN EXIT FOR
+  IF UCASE$(ABC$(IP)) = "STOP" THEN EXIT FOR
+ NEXT IP
+SORT:
+  IF W = 2 THEN CALL MENU
+  IP = IP - 1
+  X = IP
+ FOR SRT1 = 0 TO X
+  FOR SRT2 = SRT1 + 0 TO X
+   IF ABC$(SRT1) > ABC$(SRT2) THEN SWAP ABC$(SRT1), ABC$(SRT2)
+  NEXT SRT2
+ NEXT SRT1
+PRNTSORT:
+  COLOR 14, 1
+  CLS
+  PRINT "These are the sorted words:"
+  PRINT
+  N = 1
+ FOR IP = 1 TO X
+  PRINT N; ABC$(IP)
+  N = N + 1
+ NEXT IP
+  GOTO ENQ
+PSORT:
+  PRINT "Do you want the words spaced out"
+  LINE INPUT "for definitions? (Y/N)"; S$
+  IF S$ = "Y" THEN GOTO DPSORT
+  CLS
+  N = 1
+ FOR IP = 1 TO X
+  LPRINT N; ABC$(IP)
+  N = N + 1
+ NEXT IP
+  LPRINT CHR$(12)
+PDSORT:
+  CLS
+  PRINT "These are the sorted words:"
+  PRINT
+  N = 1
+ FOR IP = 1 TO X
+  PRINT N; ABC$(IP)
+  N = N + 1
+ NEXT IP
+DPSORT:
+  CLS
+  N = 1
+ FOR IP = 1 TO X
+  LPRINT N; ABC$(IP); "-"
+  LPRINT ""
+  LPRINT ""
+  N = N + 1
+ NEXT IP
+  LPRINT CHR$(12)
+  LPRINT CHR$(12)
+ GOTO PDSORT
+ENQ:
+ PRINT
+ PRINT "Press <ENTER> to quit"
+ LINE INPUT "Do you want to redo or print your words? (R/P)"; A$
+ IF A$ = "R" THEN ERASE ABC$: GOTO START
+ IF A$ = "P" THEN GOTO PSORT ELSE CALL MENU
+
+END SUB
+
+SUB DIMOND
+'DIAMOD
+'BY JOHN
+'7-22-93
+SCREEN 0
+BEG:
+LINE INPUT "What is your name?-->", NAME$
+IF NAME$ = "" THEN CALL MENU
+CLS
+LONGNAME:
+NAME$ = NAME$ + NAME$
+IF LEN(NAME$) <= 81 THEN GOTO LONGNAME
+TOP:
+FOR L = 1 TO 59 STEP 2
+T = (85 - L) / 2
+LPRINT TAB(T); LEFT$(NAME$, L)
+NEXT L
+BOTTOM:
+FOR L = 59 TO 1 STEP -2
+T = (85 - L) / 2
+LPRINT TAB(T); LEFT$(NAME$, L)
+NEXT L
+AGAIN:
+INPUT "Do you want another? (Y/N)-->", AN$
+AN$ = UCASE$(AN$)
+IF UCASE$(AN$) = "Y" THEN GOTO BEG
+IF UCASE$(AN$) = "N" THEN CALL MENU
+GOTO AGAIN
+
+END SUB
+
+SUB DRW
+CLS
+SCREEN 12
+PRINT "To draw use the arrow keys"
+PRINT "To change color press numbers 1-9"
+PRINT "Press 'Q' to quit"
+
+DO
+USER.KEY$ = INKEY$
+SELECT CASE UCASE$(USER.KEY$)
+CASE CHR$(0) + "H": DRAW "U"
+CASE CHR$(0) + "P": DRAW "D"
+CASE CHR$(0) + "K": DRAW "L"
+CASE CHR$(0) + "M": DRAW "R"
+CASE "0" TO "9": DRAW "C" + USER.KEY$
+CASE "Q": EXIT DO
+CASE "C": CLS
+END SELECT
+LOOP UNTIL (UCASE$(USER.KEY$) = "Q")
+CALL MENU
+END SUB
+
+SUB GDEMO
+BGE:
+'JOHN
+'BY JOHN
+'5-26-94
+SCREEN 12
+CLS
+C = 1
+
+
+SCREEN 12
+START2:
+NLINES = 500
+LINES = 0
+DRAWLINES:
+X1 = RND * 639
+X2 = RND * 639
+Y1 = RND * 470
+Y2 = RND * 470
+RAD = RND * 250
+C = RND * 14 + 1
+T = RND * 14 + 1
+LINE (X1, Y1)-(X2, Y2), C, BF
+LINE (X1, Y1)-(X2, Y2), T, B
+LINES = LINES + 1
+IF LINES < NLINES THEN GOTO DRAWLINES
+NSTAR1 = 250
+STAR = 0
+DRAWSTAR:
+X1 = RND * 639
+Y1 = RND * 639
+Y2 = Y1 + 7
+C = C + 1
+R = RND * 56 + 1
+R2:
+B = B + 1
+CIRCLE (X1, Y2), B, C
+IF R + 20 > B THEN GOTO R2
+B = 1
+E:
+STAR = STAR + 1
+LOCATE 20, 1
+IF C > 13 THEN C = 1
+IF STAR < NSTAR1 THEN GOTO DRAWSTAR
+E = 1
+CCHANGE = 1
+RCHANGE = 1
+CLS
+MOVEMENT:
+E = E + 1
+LINE (C - 1, R - 1)-(C + 11, R + 600), 4
+LINE (C - 1, R - 1)-(C + 11, R + 500), 1
+LINE (C - 1, R - 1)-(C + 11, R + 11), 4
+C = C + CCHANGE
+R = R + RCHANGE
+IF C > 640 THEN CCHANGE = -1
+IF R > 480 THEN RCHANGE = -1
+IF C < 0 THEN CCHANGE = 1
+IF R < 0 THEN RCHANGE = 1
+IF E = 3840 THEN GOTO START3
+GOTO MOVEMENT
+START3:
+NSTAR2 = 5000
+STAR = 0
+DRAWSTAR2:
+X1 = RND * 639
+X2 = X1 + 10
+Y1 = RND * 479
+Y2 = Y1 + 10
+R = RND * 16 + 1
+F = RND * 324
+LINE (X1, Y1)-(X2, Y2), 0, BF
+STAR = STAR + 1
+COLOR 3
+IF STAR < NSTAR2 THEN GOTO DRAWSTAR2
+CLS
+LINE (232, 120)-(400, 290), 4, BF
+LINE (232, 120)-(400, 290), 3, B
+CCCHANGE = 1
+RRCHANGE = 1
+S = 0
+CLS
+MOVEMENT3:
+CIRCLE (CC, RR), 130, 4
+S = S + 1
+CC = CC + CCCHANGE
+RR = RR + RRCHANGE
+IF CC > 640 THEN CCCHANGE = -1: SOUND 39, 1: SOUND 40, 1: SOUND 42, 2: SOUND 45, 2
+IF RR > 480 THEN RRCHANGE = -1: SOUND 39, 1: SOUND 40, 1: SOUND 42, 2: SOUND 45, 2
+IF CC < 0 THEN CCCHANGE = 1: SOUND 39, 1: SOUND 40, 1: SOUND 42, 2: SOUND 45, 2
+IF RR < 0 THEN RRCHANGE = 1: SOUND 39, 1: SOUND 40, 1: SOUND 42, 2: SOUND 45, 2
+IF S = 1910 THEN GOTO F
+GOTO MOVEMENT3
+F:
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+DEE:
+CLS
+R = 0
+ASTART:
+SCREEN 12
+FOR I = 1 TO 70 STEP 1
+R = R + 1
+IF R = 550 THEN GOTO NO
+CIRCLE (323, I), R, 2
+CIRCLE (322, I), R, 3
+CIRCLE (321, I), R, 9
+CIRCLE (320, I), R, 1
+NEXT I
+GOTO ASTART
+NO:
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+CLS
+CIRCLE (320, 220), 200, 4
+R = 50
+MOUTH:
+R = R + 1
+CIRCLE (320, 320), R, 4
+IF R < 56 THEN GOTO MOUTH
+R = 1
+EYE1:
+R = R + 1
+CIRCLE (220, 120), R, 15
+IF R < 50 THEN GOTO EYE1
+R = 1
+EYE1P:
+R = R + 1
+CIRCLE (220, 120), R, 1
+IF R < 20 THEN GOTO EYE1P
+R = 1
+EYE2:
+R = R + 1
+CIRCLE (420, 120), R, 15
+IF R < 50 THEN GOTO EYE2
+R = 1
+EYE2P:
+R = R + 1
+CIRCLE (420, 120), R, 1
+IF R < 20 THEN GOTO EYE2P
+R = 1
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+LOCATE 21, 35
+PRINT "YHHHAAAAA!!!"
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+LOCATE 21, 35
+PRINT "ITT WOORRKSS!"
+CLS
+Z = 25
+C = 1
+ART:
+SCREEN 12
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+LINE (E, R)-(D, y), C
+D = 345 * RND + 5
+R = RND * 235 + 1
+X = 37 + RND * 324
+E = 455 * RND + 2
+y = RND * 364 + 1
+C = C + 1
+SOUND 37 + X * 10, 2
+IF C > 13 THEN C = 1
+Z = Z - 1
+IF Z = 1 THEN GOTO WHOPEEEEEEEEEEEE
+CLS
+GOTO ART
+WHOPEEEEEEEEEEEE:
+SART:
+CLS
+SCREEN 12
+FOR I = 1 TO 20
+FOR RADIUS = 1 TO 220 STEP I
+C = (RADIUS ^ 2) + I * 2 + I ^ 2
+C = C MOD 16
+FOR X = 220 TO 420 STEP 100
+FOR y = 140 TO 340 STEP 100
+CIRCLE (X, y), RADIUS, C
+NEXT y
+NEXT X
+NEXT RADIUS
+NEXT I
+CLS
+CLS
+COLOR 3
+NSAR = 4000
+CLS
+SCREEN 12
+STA = 0
+DRAWTAR:
+X1 = RND * 639
+X2 = X1 + 1
+Y1 = RND * 479
+Y2 = Y1 + 1
+C = RND * 16 + 1
+R = RND * 16 + 1
+F = RND * 324
+LINE (X1, Y1)-(X2, Y2), C, BF
+STA = STA + 1
+IF STA < NSAR THEN GOTO DRAWTAR
+C = 1
+RT:
+C = C + 1
+PLAY "O6T200"
+PLAY "<L2 C L2 G L4 F E D>L2 C <L2 G L4 F E D>L2 C <G L4 F E F L2 D.>"
+IF C < 4 THEN GOTO RT
+CLS
+COLOR 7
+NLINES = 806
+IF NLINES = 0 THEN END
+SCREEN 12
+LINES = 0
+RAWLINES:
+X1 = RND * 1
+X2 = RND * 2000
+Y1 = RND * 1
+Y2 = RND * 4700
+RAD = RND * 25
+C = RND * 16 + 1
+LINE (X1, Y1)-(X2, Y2), C
+LINES = LINES + 1
+IF LINES < NLINES THEN GOTO RAWLINES
+CALL MENU
+
+END SUB
+
+SUB GORILLA
+TAG1:
+DEF SEG = 0
+STATUS% = PEEK(&H417)
+POKE &H417, (&H40)
+DEF SEG = 0
+SCREEN 12
+T:
+MG = 3
+PL = 1
+G = 1
+OUTLINE:
+T = 30
+PLW = 0
+PL2W = 0
+X = 3
+y = 2
+A = 27
+B = 79
+CLS
+COLOR 9
+FOR I = 2 TO 79
+LOCATE 2, I
+PRINT CHR$(205)
+NEXT I
+FOR I = 3 TO 27
+LOCATE I, 1
+PRINT CHR$(186)
+NEXT I
+FOR I = 2 TO 79
+LOCATE 28, I
+PRINT CHR$(205)
+NEXT I
+FOR I = 2 TO 27
+ LOCATE I, 80
+ PRINT CHR$(186)
+NEXT I
+LOCATE 2, 1
+PRINT CHR$(201)
+LOCATE 28, 1
+PRINT CHR$(200)
+LOCATE 28, 80
+PRINT CHR$(188)
+LOCATE 2, 80
+PRINT CHR$(187)
+PLAYGAME:
+LOCATE 1, 1
+COLOR 2
+PRINT "Player"; PL; "is it "; CHR$(PL)
+LOCATE 1, 40
+PRINT "Game"; G; "out of"; MG
+TIMER ON
+TIM = TIMER
+DO
+ COLOR 2
+ LOCATE 1, 67
+ IF INT(TIM) < INT(TIMER) THEN TIM = TIMER: T = T - 1
+ IF T < 10 THEN COLOR 10
+ PRINT "Time left"; T
+ IF T = 0 THEN GOTO TIMETAG
+ IF y < 3 THEN y = 3
+ IF y > 79 THEN y = 79
+ IF X < 3 THEN X = 3
+ IF X > 27 THEN X = 27
+ IF B < 3 THEN B = 3
+ IF B > 79 THEN B = 79
+ IF A < 3 THEN A = 3
+ IF A > 27 THEN A = 27
+ IF A = X AND B = y THEN GOTO TAG
+ COLOR 4
+ LOCATE X, y
+ PRINT CHR$(1)
+ COLOR 14
+ LOCATE A, B
+ PRINT CHR$(2)
+ SELECT CASE INKEY$
+  CASE CHR$(0) + "P": COLOR 0: LOCATE X, y: PRINT CHR$(0):  X = X + 1
+  CASE CHR$(0) + "M": COLOR 0: LOCATE X, y: PRINT CHR$(0):  y = y + 1
+  CASE CHR$(0) + "K": COLOR 0: LOCATE X, y: PRINT CHR$(0):  y = y - 1
+  CASE CHR$(0) + "H": COLOR 0: LOCATE X, y: PRINT CHR$(0):  X = X - 1
+  CASE "S", "s": COLOR 0: LOCATE A, B: PRINT CHR$(0): A = A + 1
+  CASE "D", "d": COLOR 0: LOCATE A, B: PRINT CHR$(0): B = B + 1
+  CASE "A", "a": COLOR 0: LOCATE A, B: PRINT CHR$(0): B = B - 1
+  CASE "W", "w": COLOR 0: LOCATE A, B: PRINT CHR$(0): A = A - 1
+  CASE "P", "p": GOSUB PAUSE
+  CASE "Q", "q": GOTO QDEN
+ END SELECT
+LOOP
+TAG:
+ COLOR 9
+ LOCATE 15, 30
+ IF PL = 1 THEN P2L = 2 ELSE P2L = 1
+ PRINT "Player"; PL; "has tagged Player"; P2L
+ IF PL = 1 THEN PL = 2 ELSE PL = 1
+ PLAY "L32CDEFL26GL18AL16G"
+ DO
+ LOOP UNTIL INKEY$ = CHR$(13)
+ IF G = 3 THEN GOTO DNE
+ G = G + 1
+ GOTO OUTLINE
+TIMETAG:
+ COLOR 9
+ IF P2L = 1 THEN PLW = PLW + 1
+ IF P2L = 2 THEN PL2W = PL2W + 1
+ IF PL = 1 THEN P2L = 2 ELSE P2L = 1
+ LOCATE 15, 30
+ PRINT "Player"; PL; "has ran out of time"
+ LOCATE 16, 30
+ PRINT "Player"; P2L; "wins this match"
+ IF PL = 1 THEN PL = 2 ELSE PL = 1
+ PLAY "L32CDEFL26GL18AL16G"
+ DO
+ LOOP UNTIL INKEY$ = CHR$(13)
+ TG = 200
+ IF G <> MG THEN G = G + 1: GOTO OUTLINE ELSE GOTO DNE
+
+QDEN:
+ LOCATE 16, 30
+ INPUT "ARE YOU SURE YOU WANT TO QUIT"; ANS$
+ IF ANS$ = "N" THEN GOTO T
+DNE:
+ COLOR 10
+ LOCATE 16, 30
+ PRINT STRING$(30, " ")
+ LOCATE 15, 30
+ PRINT STRING$(30, " ")
+ LOCATE 11, 25
+ PRINT CHR$(201); STRING$(33, 205); CHR$(187)
+ LOCATE 14, 25
+ PRINT CHR$(200); STRING$(33, 205); CHR$(188)
+ LOCATE 13, 25
+ PRINT CHR$(186); "John Cantrell made this program "; CHR$(234); CHR$(186)
+ LOCATE 12, 25
+ PRINT CHR$(186); STRING$(12, " "); "Game Over"; STRING$(12, " "); CHR$(186)
+ DO
+ LOOP WHILE INKEY$ = ""
+ CALL MENU
+PAUSE:
+ COLOR 10
+ LOCATE 16, 30
+ PRINT STRING$(30, " ")
+ LOCATE 15, 30
+ PRINT STRING$(30, " ")
+ LOCATE 12, 25
+ PRINT CHR$(201); STRING$(15, 205); CHR$(187)
+ LOCATE 14, 25
+ PRINT CHR$(200); STRING$(15, 205); CHR$(188)
+ LOCATE 13, 25
+ PRINT CHR$(186); "Game is paused "; CHR$(186)
+ DO
+ LOOP WHILE INKEY$ = ""
+ COLOR 0
+ LOCATE 16, 30
+ PRINT STRING$(30, " ")
+ LOCATE 15, 30
+ PRINT STRING$(30, " ")
+ LOCATE 12, 25
+ PRINT CHR$(201); STRING$(15, 205); CHR$(187)
+ LOCATE 14, 25
+ PRINT CHR$(200); STRING$(15, 205); CHR$(188)
+ LOCATE 13, 25
+ PRINT CHR$(186); "Game is paused "; CHR$(186)
+ RETURN
+TAGA:
+ COLOR 10
+ LOCATE 14, 23
+ PRINT "Totally Wierd Entianment presents"
+ LOCATE 15, 34
+ PRINT "SUPER TAG"
+ LOCATE 16, 24
+ PRINT "by John Cantrell & Bryan Dexter"
+ DO
+ LOOP WHILE INKEY$ = ""
+ COLOR 0
+ LOCATE 14, 23
+ PRINT "Totally Wierd Entianment presents"
+ LOCATE 15, 34
+ PRINT "SUPER TAG"
+ LOCATE 16, 24
+ PRINT "by John Cantrell & Bryan Dexter"
+ LOCATE 15, 30
+ COLOR 10
+ RETURN
+ END
+CODE:
+'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!READ THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+' In this game you try to either tag the other player or try to stay untagged
+' for a number of seconds. Player one(1) uses the arrow keys to move. Player
+' two (2) uses:   up
+'                 |
+'                 w           :To move around. To change the settings run
+'         left- a d s- right   the game and press 'G'. Your settings will
+'                 |            always be saved. Press 'Q' to quit in the
+'                 down         middle of a game.
+'             Not much thanks to Kevin Smith.....maybe....just a little bit
+'             To move faster try using two arrows at once
+'
+'       If you have any questions or comments please E-mail HERSHY2323
+'       on America Online
+'
+'The code is down there
+'
+'
+'
+'
+'
+'
+'
+
+'
+'
+''
+'
+'
+'
+'
+'
+'
+END SUB
+
+SUB HANGMAN
+INIT:
+CLS
+B = 7
+R = 0
+S = 0
+T = 0
+U = 0
+X = 40
+j = 0
+SCREEN 12
+COLOR 9
+IF X$ = "Y" THEN GOTO ABC
+COLOR 14
+INPUT "Do you want the computer to choose a word (Y/N)"; X$
+IF UCASE$(X$) = "Y" THEN GOTO ABC
+PRINT "Please enter 1 letter at a time"
+PRINT "Type a 4 lettered word"
+
+INPUT "1ST"; A$
+INPUT "2ND"; B$
+INPUT "3RD"; C$
+INPUT "4TH"; D$
+Q:
+CLS
+COLOR 9
+LOCATE 1, 1
+PRINT "Wrong letters"
+GOSUB SCAFOLD
+LOCATE 23, X
+FOR I = 1 TO 4
+LOCATE 23, X
+X = X + 1
+PRINT "?"
+NEXT I
+B = 6
+Q2:
+IF R + S + T + U = 10 THEN GOTO FINISH
+LOCATE 24, 15
+PRINT "You have"; B; "guesses left"
+LOCATE 25, 15
+INPUT "What is yor guess"; WD$
+IF WD$ = A$ THEN BEEP: LOCATE 23, 40: PRINT A$: R = 1
+IF WD$ = B$ THEN BEEP: LOCATE 23, 41: PRINT B$: S = 2
+IF WD$ = C$ THEN BEEP: LOCATE 23, 42: PRINT C$: T = 3
+IF WD$ = D$ THEN BEEP: LOCATE 23, 43: PRINT D$: U = 4
+IF WD$ = "1" THEN B = B + 1: GOTO Q2
+IF WD$ = A$ OR WD$ = B$ OR WD$ = C$ OR WD$ = D$ GOTO Q2
+MN:
+j = j + 2
+LOCATE 2, j
+PRINT WD$; ","
+B = B - 1
+IF B = 5 THEN GOSUB HEAD
+IF B = 4 THEN GOSUB LEFTARM
+IF B = 3 THEN GOSUB RIGHTARM
+IF B = 2 THEN GOSUB TORSO
+IF B = 1 THEN GOSUB LEFTLEG
+IF B = 0 THEN GOTO RIGHTLEG
+COLOR 9
+GOTO Q2
+
+
+HEAD:
+COLOR 15
+CIRCLE (320, 120), 25
+CIRCLE (310, 110), 5
+CIRCLE (330, 110), 5
+CIRCLE (320, 130), 5
+PAINT (310, 112), 15, 15
+CIRCLE (310, 110), 2, 0
+PAINT (310, 110), 0, 0
+PAINT (330, 112), 15, 15
+CIRCLE (330, 110), 2, 0
+PAINT (330, 110), 0, 0
+NECK:
+COLOR 15
+LINE (320, 145)-(320, 150)
+RETURN
+RIGHTARM:
+COLOR 15
+LINE (320, 150)-(360, 210)
+RETURN
+LEFTARM:
+COLOR 15
+LINE (320, 150)-(280, 210)
+RETURN
+TORSO:
+COLOR 15
+LINE (320, 150)-(320, 230)
+RETURN
+COLOR 15
+LEFTLEG:
+COLOR 15
+LINE (320, 230)-(300, 290)
+RETURN
+COLOR 15
+RIGHTLEG:
+COLOR 15
+LINE (320, 230)-(340, 290)
+GOTO DEATH
+SCAFOLD:
+LINE (320, 95)-(320, 60), 6
+LINE (320, 60)-(410, 60), 6
+LINE (320, 70)-(400, 70), 6
+LINE (410, 60)-(410, 320), 6
+LINE (400, 70)-(400, 320), 6
+LINE (400, 320)-(280, 320), 6
+LINE (410, 320)-(490, 320), 6
+LINE (490, 320)-(490, 330), 6
+LINE (280, 320)-(280, 330), 6
+LINE (280, 330)-(490, 330), 6
+RETURN
+FINISH:
+CLS
+PRINT "Congrats"
+PRINT "The word was "; A$ + B$ + C$ + D$
+INPUT "Wwould you like to play again (Y/N)"; Q$
+IF Q$ = "Y" THEN GOTO INIT
+CALL MENU
+DEATH:
+CLS
+COLOR 15
+CIRCLE (320, 120), 25
+LINE (305, 110)-(315, 110)
+LINE (325, 110)-(335, 110)
+LINE (315, 130)-(325, 130)
+LINE (320, 145)-(320, 150)
+LINE (320, 150)-(360, 210)
+LINE (320, 150)-(280, 210)
+LINE (320, 150)-(320, 230)
+LINE (320, 230)-(300, 290)
+LINE (320, 230)-(340, 290)
+LINE (320, 95)-(320, 60), 6
+LINE (320, 60)-(410, 60), 6
+LINE (320, 70)-(400, 70), 6
+LINE (410, 60)-(410, 320), 6
+LINE (400, 70)-(400, 320), 6
+LINE (400, 320)-(280, 320), 6
+LINE (410, 320)-(490, 320), 6
+LINE (490, 320)-(490, 330), 6
+LINE (280, 320)-(280, 330), 6
+LINE (280, 330)-(490, 330), 6
+PRINT "You have died"
+PLAY "O3T160"
+PLAY "MB"
+PLAY "<<L2 C L4 C C L2 C L2 E-  D L4  C <B> L2 C P4>>"
+PRINT "The word was "; A$ + B$ + C$ + D$
+INPUT "Would you like to play again (Y/N)"; Q$
+IF Q$ = "Y" THEN GOTO INIT
+CALL MENU
+ABC:
+CLS
+RANDOMIZE TIMER
+W = INT(RND * 26) + 1
+IF W = 1 THEN A$ = "A": B$ = "E": C$ = "O": D$ = "N"
+IF W = 2 THEN A$ = "B": B$ = "A": C$ = "A": D$ = "S"
+IF W = 3 THEN A$ = "C": B$ = "A": C$ = "N": D$ = "S"
+IF W = 4 THEN A$ = "D": B$ = "A": C$ = "I": D$ = "S"
+IF W = 5 THEN A$ = "E": B$ = "A": C$ = "R": D$ = "S"
+IF W = 6 THEN A$ = "F": B$ = "I": C$ = "E": D$ = "F"
+IF W = 7 THEN A$ = "H": B$ = "O": C$ = "A": D$ = "R"
+IF W = 8 THEN A$ = "I": B$ = "A": C$ = "M": D$ = "B"
+IF W = 9 THEN A$ = "J": B$ = "I": C$ = "N": D$ = "G"
+IF W = 10 THEN A$ = "K": B$ = "E": C$ = "A": D$ = "S"
+IF W = 11 THEN A$ = "L": B$ = "U": C$ = "A": D$ = "U"
+IF W = 12 THEN A$ = "M": B$ = "Y": C$ = "A": D$ = "L"
+IF W = 13 THEN A$ = "N": B$ = "U": C$ = "N": D$ = "S"
+IF W = 14 THEN A$ = "O": B$ = "P": C$ = "A": D$ = "L"
+IF W = 15 THEN A$ = "P": B$ = "A": C$ = "I": D$ = "N"
+IF W = 16 THEN A$ = "Q": B$ = "U": C$ = "A": D$ = "G"
+IF W = 17 THEN A$ = "R": B$ = "I": C$ = "O": D$ = "T"
+IF W = 18 THEN A$ = "S": B$ = "Y": C$ = "N": D$ = "C"
+IF W = 19 THEN A$ = "T": B$ = "O": C$ = "A": D$ = "D"
+IF W = 20 THEN A$ = "U": B$ = "N": C$ = "A": D$ = "U"
+IF W = 21 THEN A$ = "V": B$ = "A": C$ = "I": D$ = "N"
+IF W = 22 THEN A$ = "W": B$ = "Y": C$ = "E": D$ = "S"
+IF W = 23 THEN A$ = "Y": B$ = "A": C$ = "N": D$ = "K"
+IF W = 24 THEN A$ = "Y": B$ = "O": C$ = "U": D$ = "R"
+IF W = 25 THEN A$ = "Z": B$ = "A": C$ = "N": D$ = "Y"
+IF W = 26 THEN A$ = "G": B$ = "O": C$ = "A": D$ = "T"
+GOTO Q
+CALL MENU
+
+
+END SUB
+
+SUB HELP
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 4
+LOCATE 10, 20                                          '
+PRINT "This program is made to be a good menu system"
+LOCATE 11, 20
+PRINT "To go to a sub-program hold down the letter"
+LOCATE 12, 20
+PRINT "in front of the program name. To exit just"
+LOCATE 13, 20
+PRINT "Press 'Q'. To run this program again press F5"
+LOCATE 16, 20
+LINE INPUT "Press anything to continue"; BV$
+CALL MENU
+END SUB
+
+SUB HONE
+CLS
+SCREEN 12
+CIRCLE (320, 220), 100, 7, , , .5
+PAINT (320, 220), 4, 7
+CIRCLE (320, 250), 100, 7, 3.14, 6.28, .5
+LINE (220, 220)-(220, 250), 7
+LINE (420, 220)-(420, 250), 7
+PAINT (300, 280), 4, 7
+LINE (250, 256)-(253, 286), 15, BF
+LINE (230, 243)-(231, 273), 15, BF
+LOCATE 15, 15
+PRINT "The Button-->"
+LOCATE 16, 5
+PRINT "Press enter to push it"
+LOCATE 20, 30
+COLOR 4
+PRINT "To launch or not to launch..."
+DO
+LOOP UNTIL INKEY$ = CHR$(13)
+CLS
+CIRCLE (320, 240), 100, 7, , , .5
+PAINT (320, 220), 4, 7
+CIRCLE (320, 250), 100, 7, 3.14, 6.28, .5
+
+LINE (220, 240)-(220, 250), 7
+LINE (420, 240)-(420, 250), 7
+PAINT (300, 290), 4, 7
+LINE (250, 277)-(253, 286), 15, BF
+LINE (230, 263)-(231, 273), 15, BF
+LOCATE 20, 35
+PRINT "...To launch!!"
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+SOUND 20000, 10
+CLS
+DIM MISSLE(2050)
+CIRCLE (320, 220), 50, 15, , , 6
+LINE (320, 290)-(320, 270), 15
+LINE (310, 320)-(320, 300), 15
+LINE (305, 300)-(310, 320), 15
+LINE (314, 262)-(305, 300), 15
+LINE (330, 320)-(320, 300), 15
+LINE (335, 300)-(330, 320), 15
+LINE (326, 262)-(335, 300), 15
+PAINT (326, 290), 15, 15
+PAINT (320, 220), 15, 15
+GET (290, 100)-(350, 350), MISSLE
+X = 90
+CLS
+DO
+B = B + 1
+CLS
+C = INT(RND * 500) + 1
+X = 90
+DO
+PUT (C, X), MISSLE, PSET
+X = X - 10
+LOCATE 23, 1
+COLOR 4
+PRINT "Launching missles..."
+
+LOOP WHILE X > 0
+
+LOOP WHILE B < 15
+
+CIRCLE (320, 220), 50, 15, , , 6
+LINE (320, 170)-(320, 150), 15
+LINE (320, 150)-(310, 130), 15
+LINE (310, 130)-(305, 150), 15
+LINE (305, 150)-(314, 180), 15
+LINE (320, 150)-(330, 130), 15
+LINE (330, 130)-(335, 150), 15
+LINE (335, 150)-(326, 180), 15
+PAINT (330, 150), 15, 15
+PAINT (310, 150), 15, 15
+PAINT (320, 220), 15, 15
+GET (290, 100)-(350, 270), MISSLE
+CLS
+RANDOMIZE TIMER
+DO
+V = V + 1
+X1 = RND * 500
+FOR X = 1 TO 280 STEP 10
+PUT (X1, X), MISSLE, PSET
+NEXT X
+CLS
+FOR E = 1 TO 10
+CIRCLE (X1, 470), 300, 14
+PAINT (X1, 470), 4, 14
+PAINT (X1, 470), 14, 14
+NEXT E
+CLS
+LOOP WHILE V < 15
+X = 320
+y = 50
+FOR I = 1 TO 7
+CIRCLE (X, y), 50, 8
+PAINT (X, y), 8, 8
+IF X = 320 THEN X = 340 ELSE X = 320
+y = y + 80
+NEXT I
+X = 120
+y = 50
+FOR I = 1 TO 7
+CIRCLE (X, y), 50, 7
+PAINT (X, y), 7, 7
+IF X = 120 THEN X = 140 ELSE X = 120
+y = y + 80
+NEXT I
+X = 520
+y = 50
+FOR I = 1 TO 7
+CIRCLE (X, y), 50, 8
+PAINT (X, y), 8, 8
+IF X = 520 THEN X = 540 ELSE X = 520
+y = y + 80
+NEXT I
+
+PRINT "Missles have exploded right on target"
+DO
+LOOP WHILE INKEY$ = ""
+CALL MENU
+END SUB
+
+SUB MENU
+V = 1
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 4
+LOCATE 3, 30
+PRINT "Totally Wierd Entertainment"
+LOCATE 8, 20
+PRINT "A. Hangman"'26 different words
+LOCATE 9, 20
+PRINT "B. Draw"    'this is a poor drawing program
+LOCATE 10, 20
+PRINT "C. Music"    'LOTS of music
+LOCATE 11, 20
+PRINT "D. Stone Gate Overture"'a nice song
+LOCATE 12, 20
+PRINT "E. Alphabetizing Program"'guess what this does
+LOCATE 13, 20
+PRINT "F. Graphics Demo"'neat at first sucks later
+LOCATE 14, 20
+PRINT "G. Diamond"'prints stuff in a diamond shape of way
+LOCATE 15, 20
+PRINT "H. The Red Button"'launches the missiles DUH
+LOCATE 16, 20
+PRINT "I. TicTacToe"'2player
+LOCATE 17, 20
+PRINT "J. Super Tag" 'SUPER TAG
+LOCATE 18, 20
+PRINT "K. Help"     '
+LOCATE 19, 20
+PRINT "Press 'Q' to quit"
+TIMER ON
+OU = TIMER
+DO
+IN = TIMER
+SELECT CASE UCASE$(INKEY$)
+CASE "A": TIMER OFF: CALL HANGMAN
+CASE "B": TIMER OFF: CALL DRW
+CASE "C": TIMER OFF: CALL MUSIC
+CASE "D": TIMER OFF: CALL STNGTE
+CASE "E": TIMER OFF: CALL AB
+CASE "F": TIMER OFF: CALL GDEMO
+CASE "G": TIMER OFF: CALL DIMOND
+CASE "H": TIMER OFF: CALL HONE
+CASE "I": TIMER OFF: CALL NIBBLES
+CASE "J": TIMER OFF: CALL GORILLA
+CASE "K": TIMER OFF: CALL HELP
+CASE "S": TIMER OFF: CALL SCREENSAVER
+CASE "Q": END
+END SELECT
+IF IN - OU >= 10 THEN TIMER OFF: CALL SCREENSAVER
+LOOP UNTIL (INKEY$ = "Q")
+
+CALL MENU
+END SUB
+
+SUB MUSIC
+TART:
+V = 0
+SCREEN 12
+LINE (0, 0)-(639, 479), 2, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 1, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 2, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 1, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 1
+LOCATE 10, 20
+PRINT "A. American Battle Songs"
+LOCATE 11, 20
+PRINT "B. Easy n'Sinple Songs"
+LOCATE 12, 20
+PRINT "C. Traditional Songs"
+LOCATE 13, 20
+PRINT "D. Folksongs"
+LOCATE 14, 20
+PRINT "E. Etc."
+LOCATE 1, 1
+PRINT "Press 'M' to got the main menu"
+LOCATE 15, 20
+OU = TIMER
+V = 2
+DO
+IN = TIMER
+SELECT CASE INKEY$
+CASE "A": GOTO A2
+CASE "B": GOTO B2
+CASE "C": GOTO C2
+CASE "D": GOTO D2
+CASE "E": GOTO Z2
+CASE "M": CALL MENU
+END SELECT
+LOOP
+A2:
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 12, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 12, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 12
+LOCATE 10, 20
+PRINT "A. America, the Beutiful"
+LOCATE 11, 20
+PRINT "B. Battle Hymn of the Republic"
+LOCATE 12, 20
+PRINT "C. Yankee Doodle Boy"
+LOCATE 13, 20
+PRINT "D. Marines' Hymn"
+LOCATE 2, 2
+PRINT "Press 'M' to go to the menu"
+LOCATE 14, 20
+QES:
+A:
+DO
+SELECT CASE INKEY$
+CASE "A": GOTO 1
+CASE "B": GOTO 2
+CASE "C": GOTO 3
+CASE "D": GOTO 4
+CASE "M": GOTO TART
+END SELECT
+LOOP
+1 :
+PLAY "O3T120"
+PLAY "<L4 F F. L8 D L4 D F F. L8 C L4 C  D E- F G A L2 F. L4 F F. L8 D L4 D F F. L8 C L4 C> C <B> C D <G> L2 C. L4 <F> D. L8 D L4 C <B- B-. L8 A L4 A B-> C <A G F L2 B-. L4 B- B-. L8 G L4 G B- B-. L8 F L4 F F G B- F> C <L2 B-.> "
+GOTO A
+2 :
+PLAY "O3T120"
+PLAY "<L4 G L8 G. G G. F E. G> C. D E. E E. D L4 C L8 C. <B A. A A. B> C. <B> C. <A G. A G. E L4 G L8 G. G G. G G. F E. G> C. D E. E E. D L4 C C D D C <B> L2 C."
+SOUND 20000, 10
+PLAY "<L4 G. L8 F E G > C. D L2 E L4 C"
+SOUND 20000, 10
+PLAY "< A. L8 B> C <B> C. <A L2 G L4 E>"
+SOUND 20000, 10
+PLAY "<G. L8 F E G> C. D L2 E L4 C C D D C <B> L2 C."
+GOTO A
+3 :
+PLAY "O3T240"
+PLAY "<L2 A. L4 G G F E F L1 G D L2 G. L4 A G E D C L1 F. P4 L4 A L2 A A L4 F# G A> C <L2 B- A G L4 A L2 G L4 F D L2 F L4 A L1 G. L2 A. L4 G G F E F L1 G D L2 G. L4 A G E D C L1 F. L4 F F G A F A G E F F G A L2 F C L4 D L2 G L4 C E F G E L1 F L4 F"
+GOTO A
+4 :
+PLAY "O4T240"
+PLAY "<L4 C E L2 G G G G G.> L4 C <L2 G L4 E F L2 G G L4 F L2 D L1 C L4 C E L2 G G G G G.> L4 C <L2 G L4 E F L2 G G L4 F L2 D L1 C> L4 C <B L2 A F A F G. L4 A L2 G> L4 C <B L2 A F L4 A> L2 C <L1 G L4 C E L2 G G G G G.> L4 C <L2 G L4 E F L2 G G L4 F L2 D L1 C"
+GOTO A
+
+B2:
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 2, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 2, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 2
+LOCATE 10, 20
+PRINT "A. Robin and John"
+LOCATE 11, 20
+PRINT "B. Beethoven's Minuet"
+LOCATE 12, 20
+PRINT "C. Twinkle Twinkle Little Star"
+LOCATE 13, 20
+PRINT "D. Pumpkin Pie"
+LOCATE 14, 20
+PRINT "E. Caisson Song"
+LOCATE 15, 20
+PRINT "F. London Brigde"
+LOCATE 16, 20
+PRINT "G. Ode to Joy"
+LOCATE 17, 20
+PRINT "H. The Dot Game"
+LOCATE 18, 20
+PRINT "I. Shoo Fly"
+LOCATE 2, 2
+PRINT "Press 'M' to go to menu"
+LOCATE 19, 20
+B:
+DO
+SELECT CASE INKEY$
+CASE "A": GOTO 5
+CASE "B": GOTO 6
+CASE "C": GOTO 7
+CASE "D": GOTO 8
+CASE "E": GOTO 9
+CASE "F": GOTO 10
+CASE "G": GOTO 11
+CASE "H": GOTO 12
+CASE "I": GOTO 13
+CASE "M": GOTO TART
+END SELECT
+LOOP
+
+GOTO B
+5 :
+PLAY "O3T120"
+PLAY "<L4 C C C L8 E F L4 G G G L8 A B> L4 C <G L8 G A G F L4 E C C A A A L8 G F L4 E G G L8 A B> L4 C <G L8 G A G F L4 E C C"
+PLAY "L4 C C C L8 E F L4 G G G L8 A B> L4 C <G L8 G A G F L4 E C C A A A L8 G F L4 E G G L8 A B> L4 C <G L8 G A G F L4 E C L2 C"
+COLOR 10
+GOTO B
+6 :
+
+PLAY "O5 T60"
+PLAY "L16 <B. >C D. C# D. C# D. C# L4 D L16"
+PLAY "E. <B > L4 C L16 D. <A L4 B"
+COLOR 1
+GOTO B
+7 :
+PLAY "O4 T120"
+PLAY "L4 C C G G A A L2 G L4 F F E E D D L2 C L4 G G F F E E L2 D"
+PLAY "L4 G G F F E E L2 D"
+PLAY "L4 C C G G A A L2 G L4 F F E E D D L2 C"
+COLOR 12
+GOTO B
+8 :
+PLAY "O4 T240"
+PLAY "L4 A F G F D F C F A F G F D G L2 G L4  A F G F D F C F A F G E F F L2 F"
+COLOR 3
+GOTO B
+9 :
+PLAY "O3 T240"
+PLAY "L4 G E L2 G L4 G E L2 G L4 G E G A G E L2 G L4"
+PLAY "E F G L2 F L4 D G L2 F L4 D L1 C"
+COLOR 5
+GOTO B
+10 :
+PLAY "O3 T240"
+PLAY "L4 G A G F E F L2 G L4 D E L2 F L4 E F L2 G L4 G A G F E F L2 G D G L4 E L6 D."
+COLOR 13
+GOTO B
+11 :
+PLAY "O3 T120"
+PLAY "L4 E E F G G F E D C C D E E D L2 D L4 E E F G G F E D C C D E D C L2 C"
+COLOR 9
+GOTO B
+12 :
+PLAY "O3T120"
+PLAY "L4 F. L8 G L4 A G F. L8 E L4 D E F . L8 G L4 A F L2 G."
+SOUND 20000, 10
+PLAY "L4 B-. L8 A L4 G B- A. L8 G L4 F A L4 G. F L8 E L4 G L2 F."
+COLOR 4
+GOTO B
+13 :
+PLAY "O3T120"
+PLAY "<L4 AL2 F L4 G A B- L2 G L4 G L2 E L4 F G A L2 F L4 A L2 F L4 G A B- L2 G> L4 C C C <B- A G L2 F"
+COLOR 5
+GOTO B
+C2:
+SCREEN 12
+LINE (0, 0)-(639, 479), 4, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 14, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 4, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 14, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 14
+LOCATE 8, 20
+PRINT "A. Andante"
+LOCATE 9, 20
+PRINT "B. Aura Lee"
+LOCATE 10, 20
+PRINT "C. When the Saints go Marching in"
+LOCATE 11, 20
+PRINT "D. Pomp and Circamstance"
+LOCATE 12, 20
+PRINT "E. Fre're Jacques"
+LOCATE 13, 20
+PRINT "F. London Derry Air"
+LOCATE 14, 20
+PRINT "G. Aloutte"
+LOCATE 15, 20
+PRINT "H. Shortin' Bread"
+LOCATE 16, 20
+PRINT "I. The Erie Canal"
+LOCATE 17, 20
+PRINT "J. Old Shoe Boots and Leggins"
+LOCATE 18, 20
+PRINT "K. Camel Ride"
+LOCATE 19, 20
+PRINT "L. The Man on the Trapeze"
+LOCATE 2, 2
+PRINT "Press 'M' to go to the menu"
+LOCATE 20, 20
+C:
+DO
+SELECT CASE INKEY$
+CASE "A": GOTO 14
+CASE "B": GOTO 15
+CASE "C": GOTO 16
+CASE "D": GOTO 17
+CASE "E": GOTO 18
+CASE "F": GOTO 19
+CASE "G": GOTO 20
+CASE "H": GOTO 21
+CASE "I": GOTO 22
+CASE "J": GOTO 23
+CASE "K": GOTO 24
+CASE "L": GOTO 25
+CASE "M": GOTO TART
+END SELECT
+LOOP
+
+14 :
+PLAY "O3 T90"
+PLAY "<L4 F F A A > C C <L2 A L4 B- B-  G G E E L2 C L4 F F A A >C C < L2 A L4 F F B- B-> L2 C <L4 C L2 B- A L4 G G L8 G A B- > C L4 D C <B- A G G G# A A > C C <F F L2 A L4 G G L8 F E D E L4 F F L2 F"
+GOTO C
+15 :
+PLAY "O3T120"
+PLAY "<D G F# G A E L2 A L4 G F# E F# L2 G D L4 D G F# G A E L2 A L4 G F# E F# L1 G L4 B. L8 B L2 B L4 B. L8 B L2 B L4 B A G A L1 B L4 B B > C < B A E A. L8 G L4 G F B. L8 A L1 G"
+GOTO C
+16 :
+PLAY "O3 T240"
+PLAY "L4 C E F L2 G. L4 C E F L2 G. L4 C E F L2 G E C E L2 D."
+PLAY "L4 E E L2 C. L4 C L2 E G L4 G L2 F. "
+PLAY "L4 E F L2 G E C D  C."
+GOTO C
+17 :
+PLAY "O3T120"
+PLAY "<L2 B- L8 A B->L4 C<L2 G F E- L8 D E- L4 F L1 C L2 D L8 E L4 F L8 G>L2 C<F B- L8 B- L4 A L8 G L1 F>"
+PLAY "<L2 B- L8 A B->L4 C<L2 G F E- L8 D E- L4 F L1 C L2 D L8 E L4 F L8 G>L2 C<F>L4 E- E- L8 E- L4 D<L8 B->L1 D<L2 G L8 A L4 B->C<L2 F B- L4 B- B->L8 E- L4 D L8 C<L2 B-.>"
+GOTO C
+18 :
+PLAY "O3T120"
+PLAY "<L4 F G A F F G A F A B->L2 C <L4 A B->L2 C L8 C D C<B- L4 A F>L8 C D C<B- L4 A F F C L2 F L4 F C L2F>"
+GOTO C
+19 :
+PLAY "O3T120"
+PLAY "<L4 E F G L2 A. L4 G A> D C <A G F L2 D. L4 F A B-> L2 C. L4 D C< A F A L2 G. L4 E F G L2 A. L4 G A> D C <A G F L2 D. L4 E F G L2 A. L4 B- A G F G L2 F.> L4 C D E L2 F. L4 E E D C D C <A L2 F.> L4 C D E L2 F. L4 E E D C <A G.> L4 C C C <A> C F G G F D F C <A L2 F. L4 E F G A> D C <A G F A G L2 F.>                                                                   "
+GOTO C
+20 :
+PLAY "O3T120"
+PLAY "<L4 G. L8 A L4 B B L8 A G A B L4 G D G. L8 A L4 B B L8 A G A B L2 G L4G. L8 A L4 B B L8 A G A B L4 G D G. L8 A L4 B B L8 A G A B L2 G L8 G G G B> D D L4 D L8 D E D C <B A L4 G > L8 D D L4 D <L8 D D L4 D > L2 D <L4 G. L8 A L4 B B L8 A G A B L4 G D G. L8 A L4 B B L8 A G A B L2 G L4G. L8 A L4 B B L8 A G A B L4 G D G. L8 A L4 B B L8 A G A B L2 G "
+GOTO C
+21 :
+PLAY "O3T120"
+PLAY "L4 C <L8 A A L4 G G>L8 C C <L4 A L2 G> L4 C <A G L8 A A E L4 E D L2 C> L4 C <L8 A A L4 G L8 G A > L4 C<A L2 G> L4 C <A G L8 G A E L4 E D L2 C L8 C C A A G G L4 A C A G A L8 C C A A G G L4 A E D L2 C L8 C C A A G G L4 A C A G A > L8 C C <A A G G L4 A E D C"
+GOTO C
+22 :
+PLAY "O3T120"
+PLAY "<L8 DD L4 G G E D G. L8 G L4 E D L8 G G L4 G A F# L2 G. L8 D D G G L4 G A A  B B> C L8 C C <B B L4 G A F# L2 G. L8 D D G G L4 G G L8 E E L4 D L2 G L8 D D L4 G G A F# L2 G. L8 D D L4 G G A A B B> C L8 C C <L4 B G A F# G D L2 G  "
+GOTO C
+23 :
+PLAY "O3T120"
+PLAY "<L4 B- B- B-> L8 D D C C <L4 B- G F B- B-> D C L2 D L4 F. L8 F G G L4 F D<L8 B- B-> L4 C <L8 B- B- L4 G L8 F F L4 B- B-  G F G L2 B-."
+GOTO C
+24 :
+PLAY "O3T120"
+PLAY "L4 D E L2 F E D L4 D E F A E F L2 D L4 F G L2 A L4 A B- A G E F L2 G L4 G A G F D E L2 F E D L4 D E F A E F L2 D"
+GOTO C
+25 :
+PLAY "O3T60"
+PLAY "<L8 D D G A B B B> C <E E L4 A L8 E D F# G A B A A G E"
+PLAY "L8 D D G A B B B> C <E E L4 A L8 E D F# G A B A L2 G"
+GOTO C
+D2:
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 5, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 5, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 5
+LOCATE 10, 20
+PRINT "A. Tom Dooley"
+LOCATE 11, 20
+PRINT "B. Loch Lomod"
+LOCATE 12, 20
+PRINT "C. Wayfarin'Stranger"
+LOCATE 13, 20
+PRINT "D. Gypsy Lament"
+LOCATE 2, 2
+PRINT "Press 'M' to go to the menu"
+LOCATE 14, 20
+D:
+DO
+SELECT CASE INKEY$
+CASE "A": GOTO 26
+CASE "B": GOTO 27
+CASE "C": GOTO 28
+CASE "D": GOTO 29
+CASE "M": GOTO TART
+END SELECT
+LOOP
+26 :
+FOR I = 1 TO 2
+PLAY "O3T100"
+PLAY "<L4 G L8 G G L4 A> C E L2 E. <L4 G L8 G G L4 A> C L1 D <L4 G L8 G G L4 A> C D L2 D. L4 D L8 D E L4 C <A> L1 C"
+NEXT I
+GOTO D
+27 :
+PLAY "O3T120"
+PLAY "<L4 D G L8 G. L16 A L4 B L8 B. L16 A L4 G L8 G. L16 E L4 D D G L8 G. L16 G L4 G L8 B> C L2 E L4 D D E L8 E. L16 D <L4 B L8 B> D CC <B A G L4 E D G L8 B> D L4 E L8 E <B L2A L4 G>"
+GOTO D
+28 :
+PLAY "O3T100"
+PLAY "L4 E E B B L2 B. L4 A B A G L2 E L4 E G B L2 A L4 A G L8 A G L2 E L4 E E B B L2 B. L4 A B A G L2 E L4 E G B L2 A. L8 A G B A G F# L2 E."
+GOTO D
+29 :
+PLAY "O3T100"
+PLAY "L2 <A A> D. <L4 A G F D L2 E A> F E. L4 D C <G L8 A> C <L4 B- L2 A A> C# D. <L4 B- A E L8 F A G F L2 D."
+GOTO D
+Z2:
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 4
+LOCATE 9, 20
+PRINT "A. Star Wars"
+LOCATE 10, 20
+PRINT "B. Rock-Boogie"
+LOCATE 11, 20
+PRINT "C. The Can-Can"
+LOCATE 12, 20
+PRINT "D. Fiesta Tango"
+LOCATE 13, 20
+PRINT "E. Music of the Night"
+LOCATE 14, 20
+PRINT "F. Heart and Soul"
+LOCATE 15, 20
+PRINT "G. March of the Men of Harlech"
+LOCATE 16, 20
+PRINT "H. The Entertainer"
+LOCATE 17, 20
+PRINT "I. Swing Low Sweet Chariot"
+LOCATE 18, 20
+PRINT "J. Trumpet Voluntary"
+LOCATE 19, 20
+PRINT "K. Academic Festival"
+LOCATE 2, 2
+PRINT "Press 'M' to go to the menu"
+Z:
+LOCATE 20, 20
+DO
+SELECT CASE INKEY$
+CASE "A": GOTO 30
+CASE "B": GOTO 31
+CASE "C": GOTO 32
+CASE "D": GOTO 33
+CASE "E": GOTO 34
+CASE "F": GOTO 35
+CASE "G": GOTO 36
+CASE "H": GOTO 37
+CASE "I": GOTO 38
+CASE "J": GOTO 39
+CASE "K": GOTO 40
+CASE "M": GOTO TART
+END SELECT
+LOOP
+30 :
+PLAY "O4T120"
+PLAY "<L4 C  G L8 F E D>L4 C < G L8 F E D>L4 C <G L8 F E F L4 D.>"
+PLAY "<L4 C  G L8 F E D>L4 C < G L8 F E D>L4 C <G L8 F E F L4 D.>"
+GOTO Z
+31 :
+PLAY "O4T120"
+PLAY "<L4 C E G L8 A A L4 A# A G L8 E E L4 C E G L8 A A A# A# L4 A L2 G L4 F A>C L8 D D L4 C <A F D C E G L8 A A A# A# L4 A L2 G L4 G B> D <L8 B G L4 F A> C<L8 A F L4 C E G L8 A A G G L4 E L2 C"
+GOTO Z
+32 :
+PLAY "O4 T150"
+PLAY "<L2 C L8 D F E D L4 G G L8 G A E F L4 D D L8 D F E D C>C<B A G F E D L2 C L8 D F E D L4 G G L8 G A E F L4 D D L8 D F E D C G D E L4 C C "
+GOTO Z
+33 :
+PLAY "O5T120"
+PLAY "L2 C<A.>L4 C<A# A L2A# L1 G.>L2 D <A#.>L4 D C <A#>L2 C<L1 A.>L2 C <A L4 A A#>C L2 C <A#. L4 A#> C <A# A"
+SOUND 20000, 8
+PLAY "L4 A# G"
+SOUND 20000, 8
+PLAY "L4 A L1 F."
+GOTO Z
+34 :
+PLAY "O3T60"
+PLAY "<<L4 F# <A> E <A> L8 D E F# G L4 E A L4 F# <A> E <A>L8 D E F# G L4 E A L8 B> D D D L4 E L8 D  C L8 <B> D D D L4 E L4 D <B L4 G  L2 A L4 L4 F# <A> E <A> L8 D E F# G L4 E A L4 F# <A> E <A> L8 D E F# G L4 E A L8 B> D D D L4 E L8 D  C L8 <B> D D D L4 E L8 D <B F# L4 A L8 F# F# E E F# G A F# E L2 D>> "
+GOTO Z
+35 :
+PLAY "O4T150"
+PLAY "<L4 C C L2 C L4 C <B> C D E E L2 E L4 E D E F L2 G  C>L4 C <B A L4 G G L2 C G C L4 F E D C L2 D>"
+PLAY "<L4 C C L2 C L4 C <B> C D E E L2 E L4 E D E F L2 G  C>L4 C <B A L4 G G L2 C G C L4 F E D C L2 D>"
+GOTO Z
+36 :
+PLAY "O3T120"
+PLAY "<L4 F. L8 E L4 D. L8 E L4 F G A F B- A G F E D E C F. L8 E L4 D. L8 E L4 F. G A>D C.<L8 G L4 G.L8 A L2 F>"
+GOTO Z
+37 :
+PLAY "O3 T120"
+PLAY "L8 D E C <A A B L4 G>L8 D E C <A A B L4 G>L8 D E C <A A B A A- L4 G>"
+SOUND 20000, 5
+SOUND 20000, 5
+PLAY "<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C L8 C C D E- E C D E E <B> L4 D L2 C.<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C.<L8 A G F# A> C E E D C<A> L2 D.<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C L8 C C D E- E C D E E <B> D L2 C. L8 C D E C D E E C"
+PLAY "O3 T120"
+PLAY "L8 D E C <A A B L4 G>L8 D E C <A A B L4 G>L8 D E C <A A B A A- L4 G>"
+SOUND 20000, 5
+SOUND 20000, 5
+PLAY "<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C L8 C C D E- E C D E E <B> L4 D L2 C.<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C.<L8 A G F# A> C E E D C<A> L2 D.<L8 D D# E> L4 C <L8 E> L4 C <L8 E> C L2 C L8 C C D E- E C D E E <B> D L2 C. L8 C D E C D E E C D C E C D E E C D C E C D E E <B> D L2 C."
+GOTO Z
+38 :
+PLAY "O3T90"
+PLAY "<L4 B L2 G L4 B G. L8 G L4 E D L8 G G G G B B> L4 D L2 D L8 E D<L2 B> L4 D <G. L8 G L4 E G L8 G G G G B B L4 A L2 G>"
+PLAY "<L4 B L2 G L4 B G. L8 G L4 E D L8 G G G G B B> L4 D L2 D L8 E D<L2 B> L4 D <G. L8 G L4 > D C <L8 B B B B A B L4 A L2 G>"
+GOTO Z
+39 :
+PLAY "O3T120"
+PLAY "<L2 G A L4 B.> L8 C <L4 B A G A B L8 A G L4 A D D D L2 G A L4 B.> L8 C <L4 B A L8 G A G A A. L8 G L2 G.>"
+GOTO Z
+40 :
+PLAY "O3T120"
+PLAY "<L4 C L2 A L4 G A L2 F L4 C C> L2 C <L4 B-> C <L2 A L4 F> D D D D L2 C <L4 A> C C <L8 B- A L4 B-> C <L2 A L4 F> D D D D L2 C <L4 A> C C <L8 B- A L4 B- G L2 F."
+GOTO Z
+
+END SUB
+
+SUB NIBBLES
+CLS
+DEF SEG = 0
+STATUS% = PEEK(&H417)
+POKE &H417, (&H40)
+DEF SEG = 0
+SCREEN 12
+TICTAC:
+COLOR 1
+:
+LINE (225, 230)-(237, 330), 2, BF
+LINE (201, 230)-(275, 235), 2, BF
+:
+LINE (250, 300)-(260, 330), 2, BF
+LINE (250, 290)-(260, 280), 2, BF
+:
+LINE (270, 300)-(280, 330), 2, BF
+LINE (280, 330)-(290, 325), 2, BF
+LINE (280, 300)-(290, 305), 2, BF
+:
+LINE (325, 230)-(337, 330), 2, BF
+LINE (300, 230)-(375, 235), 2, BF
+:
+LINE (340, 300)-(350, 330), 2, BF
+LINE (340, 330)-(360, 325), 2, BF
+LINE (340, 300)-(360, 305), 2, BF
+LINE (360, 300)-(370, 325), 2, BF
+LINE (370, 325)-(368, 330), 2, BF
+:       
+LINE (380, 300)-(390, 330), 2, BF
+LINE (390, 330)-(400, 325), 2, BF
+LINE (390, 300)-(400, 305), 2, BF
+:       
+LINE (425, 230)-(437, 330), 2, BF
+LINE (400, 230)-(475, 235), 2, BF
+:
+LINE (440, 300)-(450, 330), 2, BF
+LINE (440, 330)-(460, 325), 2, BF
+LINE (440, 300)-(460, 305), 2, BF
+LINE (460, 300)-(470, 330), 2, BF
+:
+LINE (478, 300)-(490, 330), 2, BF
+LINE (490, 330)-(500, 325), 2, BF
+LINE (490, 300)-(500, 305), 2, BF
+LINE (500, 305)-(495, 320), 2, BF
+LINE (495, 320)-(490, 318), 2, BF
+DO
+LOOP WHILE INKEY$ = ""
+CLS
+LOCATE 16, 24
+INPUT "Player 1 name"; PL1$
+LOCATE 17, 24
+INPUT "Player 2 name"; PL2$
+IF LEN(PL2$) <= 1 THEN PL2$ = "Player 2(X)"
+IF LEN(PL1$) <= 1 THEN PL1$ = "Player 1(X)"
+GOTO BEGIN
+
+BEGIN:
+CLS
+MOVES = 0
+A = 0
+B = 0
+C = 0
+D = 0
+E = 0
+F = 0
+H = 0
+G = 0
+I = 0
+A2 = 0
+B2 = 0
+C2 = 0
+D2 = 0
+E2 = 0
+F2 = 0
+H2 = 0
+G2 = 0
+I2 = 0
+SCREEN 12
+DIM XPL(2000)
+DIM O(2000)
+CIRCLE (320, 220), 50, 12
+GET (260, 160)-(380, 280), O
+CIRCLE (320, 220), 50, 0
+LINE (270, 170)-(370, 270), 2
+LINE (370, 170)-(270, 270), 2
+GET (260, 160)-(380, 280), XPL
+CLS
+LINE (200, 0)-(200, 500)
+LINE (450, 0)-(450, 500)
+LINE (0, 150)-(700, 150)
+LINE (0, 300)-(700, 300)
+LOCATE 1, 1
+PRINT "1"
+LOCATE 1, 27
+PRINT "2"
+LOCATE 1, 58
+PRINT "3"
+
+LOCATE 11, 1
+PRINT "4"
+LOCATE 11, 27
+PRINT "5"
+LOCATE 11, 58
+PRINT "6"
+
+LOCATE 20, 1
+PRINT "7"
+LOCATE 20, 27
+PRINT "8"
+LOCATE 20, 58
+PRINT "9"
+LOCATE 28, 1
+DO
+IF MOVES > 8 THEN GOTO FINISH2
+BG:
+LOCATE 28, 1
+PRINT "Which square do you want?                   "
+LOCATE 28, 1
+PRINT "Which square do you want? "; PL1$;
+INPUT X$
+
+XIN:
+IF X$ = "1" THEN A = 11: IF A = 11 AND A2 = 11 THEN GOTO XI ELSE PUT (30, 20), XPL
+IF X$ = "2" THEN B = 12: IF B = 12 AND B2 = 12 THEN GOTO XI ELSE PUT (270, 20), XPL
+IF X$ = "3" THEN C = 13: IF C = 13 AND C2 = 13 THEN GOTO XI ELSE PUT (490, 20), XPL
+IF X$ = "4" THEN D = 21: IF D = 21 AND D2 = 21 THEN GOTO XI ELSE PUT (30, 170), XPL
+IF X$ = "5" THEN E = 22: IF E = 22 AND E2 = 22 THEN GOTO XI ELSE PUT (270, 170), XPL
+IF X$ = "6" THEN F = 23: IF F = 23 AND F2 = 23 THEN GOTO XI ELSE PUT (490, 170), XPL
+IF X$ = "7" THEN G = 31: IF G = 31 AND G2 = 31 THEN GOTO XI ELSE PUT (30, 330), XPL
+IF X$ = "8" THEN H = 32: IF H = 32 AND H2 = 32 THEN GOTO XI ELSE PUT (270, 330), XPL
+IF X$ = "9" THEN I = 33: IF I = 33 AND I2 = 33 THEN GOTO XI ELSE PUT (490, 330), XPL
+IF A = 11 AND D = 21 AND G = 31 THEN V = 1: GOTO FINISH2
+IF B = 12 AND E = 22 AND H = 32 THEN V = 1: GOTO FINISH2
+IF C = 13 AND F = 23 AND I = 33 THEN V = 1: GOTO FINISH2
+IF A = 11 AND B = 12 AND C = 13 THEN V = 1: GOTO FINISH2
+IF D = 21 AND E = 22 AND F = 23 THEN V = 1: GOTO FINISH2
+IF G = 31 AND H = 32 AND I = 33 THEN V = 1: GOTO FINISH2
+IF A = 11 AND E = 22 AND I = 33 THEN V = 1: GOTO FINISH2
+IF C = 13 AND E = 22 AND G = 31 THEN V = 1: GOTO FINISH2
+MOVES = MOVES + 1
+IF MOVES > 8 THEN V = 3: GOTO FINISH2
+LOCATE 28, 1
+
+PRINT "Which square do you want?                   "
+LOCATE 28, 1
+PRINT "Which square do you want? "; PL2$;
+INPUT O$
+
+OIN:
+IF O$ = "1" THEN A2 = 11: IF A2 = 11 AND A = 11 THEN GOTO OI ELSE PUT (30, 20), O
+IF O$ = "2" THEN B2 = 12: IF B2 = 12 AND B = 12 THEN GOTO OI ELSE PUT (270, 20), O
+IF O$ = "3" THEN C2 = 13: IF C2 = 13 AND C = 13 THEN GOTO OI ELSE PUT (490, 20), O
+IF O$ = "4" THEN D2 = 21: IF D2 = 21 AND D = 21 THEN GOTO OI ELSE PUT (30, 170), O
+IF O$ = "5" THEN E2 = 22: IF E2 = 22 AND E = 22 THEN GOTO OI ELSE PUT (270, 170), O
+IF O$ = "6" THEN F2 = 23: IF F2 = 23 AND F = 23 THEN GOTO OI ELSE PUT (490, 170), O
+IF O$ = "7" THEN G2 = 31: IF G2 = 31 AND G = 31 THEN GOTO OI ELSE PUT (30, 330), O
+IF O$ = "8" THEN H2 = 32: IF H2 = 32 AND H = 32 THEN GOTO OI ELSE PUT (270, 330), O
+IF O$ = "9" THEN I2 = 33: IF I2 = 33 AND I = 33 THEN GOTO OI ELSE PUT (490, 330), O
+IF A2 = 11 AND D2 = 21 AND G2 = 31 THEN V = 2: GOTO FINISH2
+IF B2 = 12 AND E2 = 22 AND H2 = 32 THEN V = 2: GOTO FINISH2
+IF C2 = 13 AND F2 = 23 AND I2 = 33 THEN V = 2: GOTO FINISH2
+IF A2 = 11 AND B2 = 12 AND C2 = 13 THEN V = 2: GOTO FINISH2
+IF D2 = 21 AND E2 = 22 AND F2 = 23 THEN V = 2: GOTO FINISH2
+IF G2 = 31 AND H2 = 32 AND I2 = 33 THEN V = 2: GOTO FINISH2
+IF A2 = 11 AND E2 = 22 AND I2 = 33 THEN V = 2: GOTO FINISH2
+IF C2 = 13 AND E2 = 22 AND G2 = 31 THEN V = 2: GOTO FINISH2
+MOVES = MOVES + 1
+IF MOVES > 8 THEN V = 3: GOTO FINISH2
+
+LOOP
+FINISH2:
+IF V = 1 THEN LOCATE 15, 32: PRINT PL1$; " WiNS!!!!"
+IF V = 2 THEN LOCATE 15, 32:  PRINT PL2$; " WiNS!!!!"
+IF V = 3 THEN LOCATE 15, 37: PRINT "Cats Game"
+DO
+LOOP WHILE INKEY$ = ""
+ERASE XPL
+ERASE O
+LOCATE 16, 24
+INPUT "Do you wnat to play again (Y/N)"; Q$
+IF Q$ = "Y" THEN GOTO BEGIN ELSE CALL MENU
+OI:
+LOCATE 28, 1
+INPUT "Player O choose a different number"; O$
+GOTO OIN
+XI:
+LOCATE 28, 1
+INPUT "Player X choose a different number"; X$
+GOTO XIN
+
+
+
+END SUB
+
+SUB SCREENSAVER
+SHARED V AS INTEGER
+CLS
+R2D:
+RANDOMIZE TIMER
+SCRN = INT(RND * 5)
+IF SCRN = 2 THEN GOTO CIRLE
+IF SCRN = 1 THEN GOTO DESIGN
+IF SCRN = 3 THEN GOTO BOUNCE
+IF SCRN = 4 THEN GOTO LINEFOLLO
+IF SCRN = 5 THEN GOTO LINESPLAT
+GOTO R2D
+NIT:
+CLS
+R = 0
+S = 1
+DESIGN:
+SCREEN 12
+CCHANGE = 1
+RCHANGE = 1
+C = 5
+CLS
+D = 50
+DO
+
+CIRCLE (C, R), D + 1, 0
+CIRCLE (C, R), D, V
+RANDOMIZE TIMER
+D = D - 1
+
+IF D = 5 THEN D = 50
+V = INT(RND * 14)
+C = C + CCHANGE
+R = R + RCHANGE
+IF C > 640 THEN CCHANGE = INT(RND * -5)
+IF R > 480 THEN RCHANGE = INT(RND * -5)
+IF C < 0 THEN CCHANGE = INT(RND * 5)
+IF R < 0 THEN RCHANGE = INT(RND * 5)
+LOOP WHILE INKEY$ = ""
+CALL MENU
+CIRLE:
+
+RANDOMIZE TIMER
+R = 0
+S = 1
+TI:
+R = 0
+CLS
+DO
+IT:
+SCREEN 12
+R = R + 1
+IF S = 1 THEN GOSUB RZ
+CIRCLE (Y2, X1), R, 1
+IF S = 1 THEN GOSUB RN
+CIRCLE (Y1, X2), R, 2
+IF S = 1 THEN GOSUB RF
+CIRCLE (F2, F1), R, 4
+IF S = 1 THEN GOSUB RG
+CIRCLE (G2, G1), R, 5
+IF S = 1 THEN GOSUB RH
+CIRCLE (H2, H1), R, 3
+IF S = 1 THEN GOSUB RJ
+CIRCLE (J2, J1), R, 14
+IF S = 1 THEN GOSUB RK
+CIRCLE (K2, K1), R, 12
+IF R >= 250 THEN GOTO TI
+LOOP WHILE INKEY$ = ""
+CALL MENU
+
+GOTO IT
+RZ:
+X1 = INT(RND * 460) + 1
+Y2 = INT(RND * 639) + 1
+RETURN
+RF:
+F1 = INT(RND * 460) + 1
+F2 = INT(RND * 639) + 1
+'Y2 = Y1 + 7
+RETURN
+RG:
+G1 = INT(RND * 460) + 1
+G2 = INT(RND * 639) + 1
+'Y2 = Y1 + 7
+RETURN
+RH:
+H1 = INT(RND * 460) + 1
+H2 = INT(RND * 639) + 1
+'Y2 = Y1 + 7
+RETURN
+RJ:
+J1 = INT(RND * 460) + 1
+J2 = INT(RND * 639) + 1
+'2 = Y1 + 7
+RETURN
+RK:
+K1 = INT(RND * 460) + 1
+K2 = INT(RND * 639) + 1
+S = 2
+'2 = Y1 + 7
+RETURN
+RL:
+L1 = INT(RND * 460) + 1
+L1 = INT(RND * 639) + 1
+'Y2 = Y1 + 7
+S = 2
+RETURN
+RN:
+X2 = INT(RND * 460) + 1
+Y1 = INT(RND * 639) + 1
+RETURN
+
+BOUNCE:
+SCREEN 12
+CHANGE = 3
+RCHANGE = 2
+X2 = 5
+Y2 = 1
+A2 = 3
+B2 = 4
+V2 = 5
+N2 = 1
+G2 = 1
+H2 = 2
+E2 = 4
+D2 = 5
+CLS
+DO
+RANDOMIZE TIMER
+C = C + CHANGE
+R = R + RCHANGE
+X = X + X2
+y = y + Y2
+A = A + A2
+B = B + B2
+V = V + V2
+N = N + N2
+G = G + G2
+H = H + H2
+E = E + E2
+D = D + D2
+LINE (C, R)-(X, y), 1
+LINE (A, B)-(X, y), 1
+LINE (A, B)-(C, R), 1
+FOR N = 1 TO 100
+NEXT N
+LINE (C, R)-(X, y), 0
+LINE (X, y)-(A, B), 0
+LINE (A, B)-(C, R), 0
+LINE (V, N)-(G, H), 2
+LINE (G, H)-(E, D), 2
+LINE (E, D)-(V, N), 2
+FOR N = 1 TO 100
+NEXT N
+LINE (V, N)-(G, H), 0
+LINE (G, H)-(E, D), 0
+LINE (E, D)-(V, N), 0
+IF V < 0 THEN V2 = INT(RND * 9)
+IF N < 0 THEN N2 = INT(RND * 9)
+IF N > 470 THEN N2 = INT(RND * -9)
+IF V > 630 THEN V2 = INT(RND * -9)
+IF G < 0 THEN G2 = INT(RND * 9)
+IF H < 0 THEN H2 = INT(RND * 9)
+IF G > 630 THEN G2 = INT(RND * -9)
+IF H > 470 THEN H2 = INT(RND * -9)
+IF E < 0 THEN E2 = INT(RND * 9)
+IF D < 0 THEN D2 = INT(RND * 9)
+IF E > 630 THEN E2 = INT(RND * -9)
+IF D > 470 THEN D2 = INT(RND * -9)
+IF C < 0 THEN CHANGE = INT(RND * 9)
+IF R < 0 THEN RCHANGE = INT(RND * 9)
+IF R > 470 THEN RCHANGE = INT(RND * -9)
+IF C > 630 THEN CHANGE = INT(RND * -9)
+IF X < 0 THEN X2 = INT(RND * 9)
+IF y < 0 THEN Y2 = INT(RND * 9)
+IF X > 630 THEN X2 = INT(RND * -9)
+IF y > 470 THEN Y2 = INT(RND * -9)
+IF A < 0 THEN A2 = INT(RND * 9)
+IF B < 0 THEN B2 = INT(RND * 9)
+IF A > 630 THEN A2 = INT(RND * -9)
+IF B > 470 THEN B2 = INT(RND * -9)
+LOOP WHILE INKEY$ = ""
+CALL MENU
+LINEFOLLO:
+RANDOMIZE TIMER
+LINES = 0
+A = RND * 639
+B = RND * 470
+DO
+FOR N = 1 TO 200
+NEXT N
+D = D + 1
+X = RND * 639
+
+y = RND * 470
+LINE (A, B)-(X, y), C
+A = X
+B = y
+IF D = 50 THEN CLS
+IF D = 50 THEN D = 1
+IF D = 1 THEN C = C + 1
+IF C = 14 THEN C = 1
+LOOP WHILE INKEY$ = ""
+CALL MENU
+LINESPLAT:
+RANDOMIZE TIMER
+LINES = 0
+A = RND * 639
+B = RND * 470
+DO
+FOR N = 1 TO 100
+NEXT N
+RANDOMIZE TIMER
+D = D + 1
+X = RND * 639
+y = RND * 470
+
+LINE (A, B)-(X, y), C
+X = A
+y = B
+IF D = 100 THEN CLS
+IF D = 100 THEN D = 1
+IF D = 1 THEN A = RND * 639: B = RND * 470
+IF D = 1 THEN C = C + 1
+IF C = 14 THEN C = 1
+LOOP WHILE INKEY$ = ""
+CALL MENU
+END SUB
+
+SUB STNGTE
+PLAY "O3T120"
+PLAY "MN <L4 F A G L8 A B- L4 A L8 G F L2 G L4 FF G L8 A B- L4 A F G L8 A B->L4 C<A G L8 A B- L4 A>L4 D L8 C<B- L4 A L2 G. L8 A B- L2 A L8 F G A B- L4 A L8 G F L4 G L8 A B-> C <B- L4 A  G L8 A B- L4 A> D L8 C< B- L4 A L2 G. L8 A B- L2 G. L4 F C A L8 G F L2 G. L8 A B-> L4 C. L8 C< L4 F L8 G A  L4 B-. L8 B- L4 E L8 F G L4 A.> L8 C <B- A G F L2 G. L8 A B-> L4 C. L8 C< L4 F L8 G A L4 B-. L8 B- L4 E L8 F G L4 A.> L8 C< B- A L4 G L2F L8 F L8 A> C C L4 C C D L8 D D <L4 G L8 A B->"
+PLAY "MN L4 C L8 C C< L4 F L8 G A B- A G F L4 G. L8 F L2 F L4 C A L8 G F L2 G. L8 A B-> L4 C. L8 C <L4 F L8 G A L4 B-. L8 B- L4 E L8 F G L4 A. > L8 C < B- A G F L2 G. L8 A B-> L4 C. L8 C <L4 F L8 G A L4 B-. L8 B- L4 E L8 F G L4 A. >L8 C < B- A G L2 F>"
+PLAY "MN <L8 A >C C L4 C C L4 D L8 D D<L4 G L8 A B-> L4 C L8 C C <L4 F L8 G A L2 B- L4 A G L2 G L4 A G F C A L8 G F> L1 C <L8 F>"
+CALL MENU
+END SUB
+
+SUB TIME
+SCREEN 12
+LINE (0, 0)-(639, 479), 1, BF
+Y1 = 0
+X1 = 0
+Y2 = 639
+X2 = 479
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 - 1
+NEXT I
+LINE (120, 140)-(520, 350), 0, BF
+Y1 = 140
+X1 = 100
+Y2 = 550
+X2 = 330
+LINE (140, 100)-(550, 330), 1, BF
+FOR I = 1 TO 5
+LINE (Y1, X1)-(Y2, X2), 4, B
+Y1 = Y1 + 1
+X1 = X1 + 1
+Y2 = Y2 - 1
+X2 = X2 + 1
+NEXT I
+COLOR 4
+DO
+LOCATE 8, 20
+PRINT TIME$
+LOOP WHILE INKEY$ = ""
+CALL MENU
+END SUB
+
+SUB TP
+CHAIN "C:\BASIC\JOHN\FILE.BAS"
+RUN "C:\BASIC\JOHN\FILE.BAS"
+
+END SUB
+

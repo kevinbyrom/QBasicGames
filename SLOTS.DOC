@@ -1,0 +1,68 @@
+                                 MichaelSoft Slots  
+
+TO START:
+1. Exit Windows or OS/2.
+2. Start QBasic. (You may run it from DOSShell.)
+3. From the File menu, choose Open.
+4. Open the file SLOTS.BAS.
+5. Press F5 to run.
+6. To quit QBasic, choose Exit from the File menu.
+   IMPORTANT: If you are prompted to save changes, say NO.
+
+NOTE: Files with the extension .SSG are your saved games.
+
+THE GAME: After the intro screen, you will see a scoreboard on the left, and a
+box on the right. The box is the display; the scoreboard displays your score, a
+list of available keys, and a list of possible combinations. 
+
+YOUR BET: Your bet can be either $1 or $2 (default is $1). You can change your 
+bet by pressing C. Your chances of winning are the same for both bets, but so
+are your chances of losing.
+
+SPINNING: To spin, press S. The display on the right will show you what you
+spun. If you have won anything, you will hear a sound and a message will tell
+you what you got.
+
+RIGGING: It is possible to rig the game with a secret keystroke. If you are a
+good enough programmer, you should be able to find out by scanning the code.
+A warning: the game not only keeps track of whether the game is rigged or not,
+but also whether the game has been rigged since the last time you reset the 
+game. This can cause some difficulties which you will hear about later.
+
+NEW GAME: To start a new game, press N. This resets the score to 0, turns 
+rigging off, and resets the "has been rigged" thing mentioned earlier.
+
+SAVING AND LOADING GAMES: To save a game, press A. To load a saved game, press
+L. Games can be described by 8 characters. If you type a period in the name, or
+if you try to load a game that does not exist, you will recieve a nice little
+error message and you will have to restart the program. Saved games record your
+score, and whether the game has been rigged or not. (Ha! You're not going to
+fool me with that one!)
+
+ENDING THE GAME: The game ends when one of four things happens: you reach 
+$10,000, you reach -$10,000, you trigger an error (see above), or you get tired
+and quit. If you reach $10,000 or -$10,000, you will see a special screen. If
+you get an error, the screen will not appear to be very special at all. If you
+get tired and quit (by pressing Q), your screen may appear fuzzy because of 
+eyestrain. In any case, you will see the high score list. If you beat a score,
+you will get to put your name in. If you type quotation marks in your name ("),
+something bad will happen, so don't do it. Oh, by the way: if you have rigged
+the game, you don't get to put in your name, even if you have beaten all the
+scores. Which means that your saved games that have been rigged are useless,
+too. Sorry.
+
+Questions, comments, complaints, hate mail, suggestions for future versions,
+bug reports, etc:
+
+OBiteMe @ aol.com
+
+ODDS:
+1 cherry: 1 / 8
+2 cherries (left): 1 / 64
+2 cherries (right): 1 / 64
+3 cherries: 1 / 512
+3 lemons: 1 / 111
+3 plums: 1 / 111 
+3 bars: 1 / 111
+3 sevens: 1 / 111
+3 m's: 1 / 13,824

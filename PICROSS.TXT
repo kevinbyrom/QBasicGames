@@ -1,0 +1,55 @@
+Hey, whats up! This is KB 49ers speaking!
+Thanks for downloading PICROSS!
+Always be on the lookout for my games to show up on AOL.
+If the author is KB 49ers, then you know you will be downloading a quality game.
+
+Picross can seem complicated at first, but when you understand the rules,
+this game can be the most addictive game you have ever played. Trust me,
+I love this game!
+
+---Object of the game
+   The object of picross is to locate all the rainbow blocks on the grid.
+   The numbers on the sides of the grid are the key to solving the puzzle.
+   The numbers show how many consecutive rainbow blocks there are in that row.
+   Have I lost you yet?
+   This is the most confusing part.
+   Lets give an example, say the side of the row says "2 1 1 2"
+   That means that somewhere in the row, there are 2 consecutive rainbow blocks,
+    an unknown amount of blank spaces,  then 1 rainbow block, an unknown amount of blank
+    spaces, then again 1 rainbow block, more unknown spaces, and 2 consecutive rainbow blocks.
+
+    Lets say that - equals a blank space
+        and X equals a rainbow block
+
+        "2 1 1 2" could mean  -XX-X-X-XX-
+        OR "2 1 1 2" could mean XX--X-X-XX
+      
+   Now you are probably asking yourself, "Well, which one does it mean?"
+   That you are going to have to figure out yourself.
+   Don't worry, though, because if you get stuck, you can reveal two rows by
+      pressing the "H" button------(WARNING: that takes 1 minute out of your
+        time.....yes, you do have a time limit!)
+
+   Cycle a block by pressing the ENTER button.
+     It changes from blank box -> no rainbow box -> rainbow box
+     All you do is change the blocks that you think are rainbow to a "rainbow box"
+       and all the blocks that you know are not rainbow to "no rainbow box"
+
+   Need to take a break from the game? No problem, just hit SPACE to pause.
+
+   Think you have solved the puzzle?  Hit ESC to find out.  Watch out, though,
+     because if you have made a mistake, you will be punished 30 seconds of time
+
+   That is basically all you need to know to play Picross.  I'm sure that you
+   will find the game to be revolutionary, fun and addictive! Check out the
+   previews that I have included with Picross, the games shown are way better
+   than Picross.
+
+   Also, Email me.   Only then can you get vital info on my upcoming games.  You
+   can also get games from me that are not going to be put online.  Cmon,
+   dont be shy!  You fellow programmers can also exchange programming tips
+   with me.
+
+   Email me at : KB 49ers
+
+
